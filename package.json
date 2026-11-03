@@ -1,0 +1,30 @@
+{
+  "name": "1460pizzascaseras",
+  "version": "1.0.0",
+  "description": "Catalogo web de pedidos por WhatsApp para 14-60 Pizzas Caseras (pizzas listas para hornear, delivery y retiro).",
+  "main": "admin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elopezgit/1460pizzascaseras.git"
+  },
+  "keywords": [
+    "pizzas",
+    "lph",
+    "delivery",
+    "whatsapp"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/elopezgit/1460pizzascaseras/issues"
+  },
+  "homepage": "https://github.com/elopezgit/1460pizzascaseras#readme",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
