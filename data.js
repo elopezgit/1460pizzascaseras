@@ -301,7 +301,7 @@ const DEFAULT_MENU = [
     id: 'default-pizza-party',
     cat: 'promos',
     name: 'Pizza Party',
-    desc: 'Servicio completo para tu evento: empanadas de entrada, pizzas a elección y food truck. Mínimo 25 personas.',
+    desc: 'Servicio completo para tu evento: empanadas de entrada, pizzas a elección y food truck. Mínimo 25 personas. Las variedades de pizza se eligen al reservar.',
     ingredients: 'Empanadas de carne, árabes o queso + pizzas LPH a elección, cocinadas y servidas en el evento.',
     prepDesc: 'Llevamos el food truck y todos los utensilios. Duración aproximada 2:30 hs. Seña del 40% para reservar.',
     prepTime: '2:30 hs',
