@@ -1,10 +1,15 @@
-# 14-60 Pizzas Caseras
+# 1460pizzascaseras
 
-Sitio web de pedidos auto-gestionados por WhatsApp para **14-60 Pizzas Caseras**.
+Sitio web de pedidos autogestionados estilo PedidosYa con envío por WhatsApp y gestión en Supabase para **14-60 Pizzas Caseras** (San Miguel de Tucumán).
 
-## Descripción
+## Características principales
 
-Catálogo de pizzas listas para hornear (LPH), con delivery y retiro en puntos de venta. Incluye carrito, checkout, descuento por pago en efectivo, ticket del pedido, panel de administración y servicio de Pizza Party para eventos.
+- **Diseño estilo PedidosYa (Modo Claro por defecto):** Portada de tienda con logo, estado del local en vivo (Abierto/Cerrado), calificación, tiempos de horneado, banners promocionales, barra de categorías sticky con buscador y tarjetas horizontales de productos.
+- **Catálogo por categorías:** Pizzas Clásicas, Especiales, Fugazzas y Promos, con control de cantidades directo en cada tarjeta y modal de detalle.
+- **Carrito lateral y barra flotante:** Carrito interactivo en escritorio y barra flotante inferior en móviles, con cálculo automático de **10% de descuento en efectivo** o pago por transferencia (`alias: 1460pizzas`).
+- **Delivery y 3 Puntos de Retiro:** Centro de producción (Luis Patrón Costa 1460), Punto 28 y Punto 51.
+- **Servicio de Pizza Party:** Sección dedicada para eventos (mínimo 25 personas, variedades a elección al reservar).
+- **Panel de Administración (`admin.html`):** Gestión de pedidos, clientes, productos, categorías y banners conectado a Supabase.
 
 ## Ejecución local
 
@@ -12,14 +17,3 @@ Catálogo de pizzas listas para hornear (LPH), con delivery y retiro en puntos d
 npm install
 npm run dev
 ```
-
-## Archivos principales
-
-- `index.html`, `styles.css`, `app.js`: sitio público.
-- `admin.html`, `admin.css`, `admin.js`: panel de administración.
-- `data.js`: configuración de marca, Supabase, empresa, categorías, productos y banners.
-- `scripts/build_assets.py`: generación de imágenes optimizadas.
-
-## Supabase
-
-Los datos se filtran por `empresa_id` (`3a9972e1-d620-4074-9922-0e06cae36f68`). No modifica datos ni políticas de otras empresas.

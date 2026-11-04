@@ -6,7 +6,7 @@ const ADMIN_USER = 'admin';
 const ADMIN_PASS = '123456';
 const ADMIN_SESSION_KEY = 'p1460_admin_session';
 const ADMIN_CACHE_KEY = 'p1460_admin_cache';
-const ADMIN_THEME_KEY = 'p1460_admin_theme';
+const ADMIN_THEME_KEY = 'p1460_admin_theme_light_v1';
 
 const STATUS_LABELS = {
   pendiente: 'Pendiente',
@@ -1198,7 +1198,7 @@ function escapeAttr(value) {
 
 function initAdminTheme() {
   const saved = localStorage.getItem(ADMIN_THEME_KEY);
-  applyAdminTheme(saved === 'light' ? 'light' : 'dark');
+  applyAdminTheme(saved === 'dark' ? 'dark' : 'light');
 }
 
 function toggleAdminTheme() {

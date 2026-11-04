@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="light">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>14-60 Pizzas Caseras · Pizzas LPH listas para hornear</title>
+  <title>14-60 Pizzas Caseras · Pedí Online · Pizzas LPH Listas para Hornear</title>
   <meta name="description"
-    content="Pizzas caseras listas para hornear en San Miguel de Tucumán. Delivery y retiro. Pedí por WhatsApp: 387 409 4801.">
-  <meta name="theme-color" content="#0b0b0d">
-  <meta property="og:title" content="14-60 Pizzas Caseras">
+    content="Pedí online en 14-60 Pizzas Caseras. Pizzas listas para hornear en San Miguel de Tucumán. Delivery y retiro en 3 puntos. 10% OFF en efectivo.">
+  <meta name="theme-color" content="#f6f6f9">
+  <meta property="og:title" content="14-60 Pizzas Caseras · Pedí Online">
   <meta property="og:description"
     content="Pizzas LPH listas para hornear. Delivery y retiro en San Miguel de Tucumán.">
   <meta property="og:image" content="img/banners/banner-lph.webp">
@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -35,35 +35,43 @@
   </div>
 
   <div id="app">
-    <!-- HEADER -->
+    <!-- TOP APP BAR (ESTILO PEDIDOSYA) -->
     <header class="site-header" id="siteHeader">
       <div class="container header-inner">
         <a class="brand" href="#inicio" aria-label="14-60 Pizzas Caseras, inicio">
           <img src="img/logo/1460-logo.webp" alt="Logo de 14-60 Pizzas Caseras" class="brand-logo">
           <span class="brand-copy">
-            <strong>14-60</strong>
-            <small>Pizzas Caseras</small>
+            <strong>14-60 Pizzas</strong>
+            <small>Listas para hornear</small>
           </span>
         </a>
 
-        <div class="header-status" id="storeStatus" aria-live="polite">
-          <span class="status-dot"></span>
-          <span id="storeStatusText">Consultando horario…</span>
-        </div>
+        <a href="#contacto" class="header-location" title="Ver puntos de retiro y zonas de delivery">
+          <span class="loc-icon" aria-hidden="true">📍</span>
+          <span class="loc-copy">
+            <small>Enviar a / Retirar en</small>
+            <strong>S.M. de Tucumán · 3 Puntos</strong>
+          </span>
+        </a>
+
+        <label class="header-search" for="headerSearchInput">
+          <span aria-hidden="true">🔎</span>
+          <input type="search" id="headerSearchInput" placeholder="Buscar pizzas, quesos, promos…" autocomplete="off">
+        </label>
 
         <nav class="desktop-nav" aria-label="Navegación principal">
           <a href="#menu">Menú</a>
           <a href="#promos">Promos</a>
-          <a href="#nosotros">Nosotros</a>
-          <a href="#contacto">Contacto</a>
+          <a href="#pizza-party">Pizza Party</a>
+          <a href="#contacto">Locales y Horarios</a>
         </nav>
 
         <div class="header-actions">
-          <button class="icon-btn" id="themeToggleBtn" type="button" aria-label="Cambiar tema" title="Cambiar tema">
-            <span aria-hidden="true">☀️</span>
+          <button class="icon-btn" id="themeToggleBtn" type="button" aria-label="Cambiar tema" title="Cambiar modo claro/oscuro">
+            <span aria-hidden="true">🌙</span>
           </button>
           <button class="cart-btn" id="cartOpenBtn" type="button" aria-label="Abrir carrito">
-            <span class="cart-btn-icon" aria-hidden="true">🛒</span>
+            <span class="cart-btn-icon" aria-hidden="true">🛍️</span>
             <span class="cart-btn-label">Mi pedido</span>
             <span class="cart-count" id="cartCount">0</span>
           </button>
@@ -72,171 +80,267 @@
           </button>
         </div>
       </div>
+
       <nav class="mobile-nav" id="mobileNav" aria-label="Navegación móvil" hidden>
-        <a href="#menu">Menú</a>
-        <a href="#promos">Promos</a>
-        <a href="#nosotros">Nosotros</a>
-        <a href="#contacto">Contacto</a>
+        <a href="#menu">🍕 Menú de Pizzas</a>
+        <a href="#promos">🎉 Promos y Combos</a>
+        <a href="#pizza-party">🔥 Pizza Party para Eventos</a>
+        <a href="#nosotros">🏠 Nuestra Cocina</a>
+        <a href="#contacto">📍 Puntos de Retiro y Horarios</a>
         <a href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido" target="_blank"
-          rel="noopener">WhatsApp</a>
+          rel="noopener">💬 Pedir por WhatsApp</a>
       </nav>
     </header>
 
     <main>
-      <!-- HERO -->
-      <section class="hero" id="inicio">
-        <div class="hero-glow hero-glow-red"></div>
-        <div class="hero-glow hero-glow-gold"></div>
-        <div class="container hero-grid">
-          <div class="hero-copy reveal">
-            <p class="eyebrow"><span class="eyebrow-line"></span> Pizzas LPH · Listas para hornear</p>
-            <h1>Pizzas caseras,<br><span>listas para hornear.</span></h1>
-            <p class="hero-lead">Masa fina, ingredientes de verdad y ese aroma que convierte cualquier comida en
-              una ocasión especial. Elegí tus favoritas y las preparamos para vos.</p>
-            <div class="hero-actions">
-              <a href="#menu" class="btn btn-primary">Ver el menú <span aria-hidden="true">→</span></a>
-              <a href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido" target="_blank"
-                rel="noopener" class="btn btn-ghost"><span aria-hidden="true">💬</span> Pedir por WhatsApp</a>
+      <!-- PORTADA DEL LOCAL ESTILO PEDIDOSYA -->
+      <section class="store-hero" id="inicio">
+        <div class="container">
+          <!-- Banner panorámico superior -->
+          <div class="store-cover" style="background-image: url('img/banners/banner-lph.webp');">
+            <div class="store-cover-overlay"></div>
+            <div class="store-cover-badges">
+              <span class="cover-pill cover-pill-red">🔥 Pizzas LPH · Listas para hornear</span>
+              <span class="cover-pill cover-pill-light">❄️ Del freezer al horno en 12 min</span>
             </div>
-            <ul class="hero-facts" aria-label="Beneficios">
-              <li><span aria-hidden="true">🛵</span> Delivery y retiro</li>
-              <li><span aria-hidden="true">🍕</span> Hechas en casa</li>
-              <li><span aria-hidden="true">🧊</span> Listas para hornear</li>
-            </ul>
-          </div>
-
-          <div class="hero-visual reveal">
-            <div class="hero-photo-frame">
-              <img src="img/productos/4-quesos.webp" alt="Pizza cuatro quesos de 14-60" class="hero-photo">
-              <div class="hero-photo-shine" aria-hidden="true"></div>
-              <div class="hero-floating-card">
-                <span class="hero-floating-icon" aria-hidden="true">🔥</span>
-                <span><strong>Recién horneada</strong><small>Lista para hornear</small></span>
+            <div class="store-cover-floating">
+              <img src="img/productos/4-quesos.webp" alt="Pizza 4 Quesos" loading="eager">
+              <div>
+                <strong>Hechas en casa</strong>
+                <small>Masa artesanal y muzzarella real</small>
               </div>
             </div>
-            <div class="hero-stamp" aria-hidden="true">
-              <span>LPH</span>
-              <small>Listas para<br>hornear</small>
+          </div>
+
+          <!-- Tarjeta de información del restaurante -->
+          <div class="store-header-card">
+            <div class="store-header-main">
+              <div class="store-avatar-wrap">
+                <img src="img/logo/1460-logo.webp" alt="14-60 Pizzas Caseras" class="store-avatar">
+              </div>
+
+              <div class="store-title-block">
+                <div class="store-title-row">
+                  <h1>14-60 Pizzas Caseras</h1>
+                  <span class="store-verified" title="Tienda oficial">✓ Oficial</span>
+                </div>
+                <p class="store-lead">Pizzas caseras listas para hornear en casa · Masa fina, ingredientes de verdad y lista en 12 a 15 minutos.</p>
+                <div class="store-meta-pills">
+                  <div class="header-status" id="storeStatus" aria-live="polite">
+                    <span class="status-dot"></span>
+                    <span id="storeStatusText">Consultando horario…</span>
+                  </div>
+                  <span class="meta-pill rating-pill">⭐ <strong>4.9</strong> <span>(200+ opiniones)</span></span>
+                  <span class="meta-pill">🕒 8:30–15:00 y 19:00–22:00</span>
+                  <a href="#contacto" class="meta-pill meta-pill-link">📍 Luis Patrón Costa 1460 y 2 puntos más →</a>
+                </div>
+              </div>
+
+              <div class="store-quick-cta">
+                <a href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido" target="_blank"
+                  rel="noopener" class="btn btn-whatsapp">
+                  <span aria-hidden="true">💬</span> WhatsApp Directo
+                </a>
+              </div>
             </div>
-            <div class="hero-mini-card">
-              <img src="img/productos/muzzarella.webp" alt="" loading="lazy">
-              <span><strong>Muzzarella</strong><small>La clásica de siempre</small></span>
+
+            <!-- Barra de beneficios / métricas estilo PedidosYa -->
+            <div class="store-metrics" aria-label="Información de compra">
+              <div class="metric-item metric-highlight">
+                <span class="metric-icon" aria-hidden="true">💵</span>
+                <div>
+                  <strong>$9.000 en efectivo</strong>
+                  <small>10% OFF pagando en efectivo</small>
+                </div>
+              </div>
+              <div class="metric-item">
+                <span class="metric-icon" aria-hidden="true">🏦</span>
+                <div>
+                  <strong>$10.000 transferencia</strong>
+                  <small>Alias: <b>1460pizzas</b></small>
+                </div>
+              </div>
+              <div class="metric-item">
+                <span class="metric-icon" aria-hidden="true">🛵</span>
+                <div>
+                  <strong>Delivery y Retiro</strong>
+                  <small>Envío a domicilio o 3 puntos</small>
+                </div>
+              </div>
+              <div class="metric-item">
+                <span class="metric-icon" aria-hidden="true">🔥</span>
+                <div>
+                  <strong>Horneado 12-15 min</strong>
+                  <small>A 220 °C sin descongelar</small>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- MARQUEE / TRUST -->
-      <div class="marquee" aria-hidden="true">
-        <div class="marquee-track">
-          <span>Pizzas caseras</span><i>✦</i><span>Listas para hornear</span><i>✦</i><span>Delivery y retiro</span><i>✦</i><span>Pizza Party</span><i>✦</i><span>Pedidos por WhatsApp</span><i>✦</i>
-          <span>Pizzas caseras</span><i>✦</i><span>Listas para hornear</span><i>✦</i><span>Delivery y retiro</span><i>✦</i><span>Pizza Party</span><i>✦</i><span>Pedidos por WhatsApp</span><i>✦</i>
-        </div>
-      </div>
-
-      <!-- PROMOS -->
-      <section class="section promos" id="promos">
+      <!-- BANNERS PROMOCIONALES HORIZONTALES -->
+      <section class="promos-section" id="promos" aria-label="Promociones y destacados">
         <div class="container">
-          <div class="section-head reveal">
-            <div>
-              <p class="eyebrow"><span class="eyebrow-line"></span> Para compartir</p>
-              <h2>Promos que salen del horno</h2>
-            </div>
-            <p class="section-sub">Combinaciones pensadas para juntarse alrededor de la mesa. Consultá disponibilidad y
-              zonas de entrega.</p>
+          <div class="section-compact-head">
+            <h2>🔥 Promos y destacados</h2>
+            <span>Deslizá o elegí una promo para tu pedido</span>
           </div>
           <div class="promo-grid" id="promoGrid"></div>
         </div>
       </section>
 
-      <!-- CÓMO FUNCIONA -->
-      <section class="section how">
-        <div class="container">
-          <div class="section-head reveal">
-            <div>
-              <p class="eyebrow"><span class="eyebrow-line"></span> Simple y rápido</p>
-              <h2>Así de fácil es pedir</h2>
+      <!-- BARRA STICKY DE CATEGORÍAS Y BUSCADOR (ESTILO PEDIDOSYA) -->
+      <div class="catalog-sticky-bar" id="catalogStickyBar">
+        <div class="container catalog-toolbar">
+          <div class="category-filters" id="categoryFilters" role="group" aria-label="Filtrar por categoría"></div>
+          <label class="search-box" for="menuSearch">
+            <span aria-hidden="true">🔎</span>
+            <input type="search" id="menuSearch" placeholder="Buscar pizza o ingrediente…" autocomplete="off">
+          </label>
+        </div>
+      </div>
+
+      <!-- CATÁLOGO DE PRODUCTOS + CARRITO LATERAL (LAYOUT PEDIDOSYA) -->
+      <section class="menu-section" id="menu">
+        <div class="container catalog-layout">
+          <!-- Columna izquierda: Lista de productos por categoría -->
+          <div class="catalog-main">
+            <div class="product-grid" id="productGrid" aria-live="polite"></div>
+
+            <div class="menu-empty" id="menuEmpty" hidden>
+              <span aria-hidden="true">🍕</span>
+              <h3>No encontramos productos con esa búsqueda</h3>
+              <p>Probá buscando otro ingrediente o mirá todas las categorías disponibles.</p>
+              <button type="button" class="btn btn-primary" id="clearFiltersBtn">Ver todo el menú</button>
             </div>
+
+            <p class="menu-note">💡 Todas nuestras pizzas se entregan listas para hornear (LPH). Pagando en efectivo tenés <strong>10% de descuento</strong> automático en el carrito.</p>
           </div>
-          <div class="steps-grid">
-            <article class="step-card reveal">
-              <span class="step-number">01</span>
-              <span class="step-icon" aria-hidden="true">🍕</span>
-              <h3>Elegí tus pizzas</h3>
-              <p>Recorré el menú y sumá tus favoritas al carrito. Todas se venden por unidad.</p>
-            </article>
-            <article class="step-card reveal">
-              <span class="step-number">02</span>
-              <span class="step-icon" aria-hidden="true">🛒</span>
-              <h3>Armá tu pedido</h3>
-              <p>Completá tus datos, elegí delivery o retiro y contanos cómo preferís pagar.</p>
-            </article>
-            <article class="step-card reveal">
-              <span class="step-number">03</span>
-              <span class="step-icon" aria-hidden="true">💬</span>
-              <h3>Coordinamos</h3>
-              <p>Confirmamos el pedido por WhatsApp y coordinamos la entrega o el retiro en el local.</p>
-            </article>
+
+          <!-- Columna derecha: Mi Pedido sticky (escritorio) -->
+          <aside class="catalog-sidebar" aria-label="Resumen de tu pedido">
+            <div class="side-cart-card">
+              <div class="side-cart-head">
+                <div>
+                  <h2>Tu pedido</h2>
+                  <p>14-60 Pizzas Caseras</p>
+                </div>
+                <span class="side-cart-badge" id="sideCartCount">0</span>
+              </div>
+
+              <div class="side-mode-switch" id="sideDeliveryToggle" role="group" aria-label="Modalidad de entrega">
+                <button type="button" class="side-mode-btn active" data-mode="delivery">🛵 Delivery</button>
+                <button type="button" class="side-mode-btn" data-mode="takeaway">🏠 Retiro</button>
+              </div>
+
+              <div id="sideCartEmpty" class="side-cart-empty">
+                <div class="side-empty-icon" aria-hidden="true">🛍️</div>
+                <h3>Tu bolsa está vacía</h3>
+                <p>Agregá tus pizzas favoritas con el botón <strong>+</strong> para armar tu pedido.</p>
+              </div>
+
+              <div id="sideCartItems" class="side-cart-items" hidden></div>
+
+              <div id="sideCartFooter" class="side-cart-footer" hidden>
+                <div class="side-cart-summary">
+                  <div class="side-row">
+                    <span>Subtotal (Transferencia)</span>
+                    <strong id="sideSubtotal">$0</strong>
+                  </div>
+                  <div class="side-row side-row-cash">
+                    <span>💵 Precio en Efectivo (10% OFF)</span>
+                    <strong id="sideCashTotal">$0</strong>
+                  </div>
+                </div>
+                <button type="button" class="btn btn-primary side-checkout-btn" id="sideOpenCheckoutBtn">
+                  Continuar pedido · <span id="sideBtnTotal">$0</span>
+                </button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- PIZZA PARTY PARA EVENTOS -->
+      <section class="section party" id="pizza-party">
+        <div class="container">
+          <div class="party-card reveal">
+            <div class="party-media">
+              <img src="img/banners/banner-pizza-party.webp" alt="Servicio de Pizza Party de 14-60" loading="lazy">
+              <span class="party-tag">🎊 Eventos y Cumpleaños</span>
+            </div>
+            <div class="party-copy">
+              <p class="eyebrow"><span class="eyebrow-line"></span> Servicio de Eventos</p>
+              <h2>Pizza Party: cocinamos en tu evento</h2>
+              <p>Cumpleaños, juntadas, eventos escolares o recaudaciones. Llevamos nuestro food truck, las pizzas LPH y el servicio completo de cocina para que solo tengas que disfrutar.</p>
+              <ul class="check-list">
+                <li><strong>Entrada de empanadas:</strong> carne, árabes y queso</li>
+                <li><strong>Pizzas LPH libres:</strong> las variedades se eligen al momento de reservar</li>
+                <li><strong>Food truck equipado:</strong> incluye utensilios y servicio de cocina</li>
+                <li><strong>Duración aproximada:</strong> 2:30 horas de servicio continuo</li>
+                <li><strong>Reserva:</strong> seña del 40% y cancelación el día del evento</li>
+              </ul>
+              <div class="party-footer">
+                <div class="party-price">
+                  <strong>$12.500</strong>
+                  <span>por persona · mínimo 25 personas</span>
+                </div>
+                <div class="party-actions">
+                  <button type="button" class="btn btn-primary" data-add-party="default-pizza-party">
+                    ➕ Sumar Pizza Party (25 pers.)
+                  </button>
+                  <a href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20consultar%20por%20Pizza%20Party%20y%20disponibilidad"
+                    target="_blank" rel="noopener" class="btn btn-ghost">💬 Consultar fecha</a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- MENÚ -->
-      <section class="section menu-section" id="menu">
+      <!-- PUNTOS DE RETIRO, HORARIOS Y CONTACTO -->
+      <section class="section contact" id="contacto">
         <div class="container">
           <div class="section-head reveal">
             <div>
-              <p class="eyebrow"><span class="eyebrow-line"></span> Nuestro menú</p>
-              <h2>Elegí tu próxima pizza</h2>
+              <p class="eyebrow"><span class="eyebrow-line"></span> Información del local</p>
+              <h2>Puntos de retiro, horarios y pagos</h2>
             </div>
-            <p class="section-sub">Pizzas por unidad, listas para hornear en casa. Precios en pesos argentinos.</p>
+            <p class="section-sub">Podés pedir con envío a domicilio o retirar por cualquiera de nuestros 3 puntos en San Miguel de Tucumán.</p>
           </div>
 
-          <div class="menu-toolbar reveal">
-            <label class="search-box" for="menuSearch">
-              <span aria-hidden="true">🔎</span>
-              <input type="search" id="menuSearch" placeholder="Buscar por nombre o ingrediente…" autocomplete="off">
-            </label>
-            <div class="category-filters" id="categoryFilters" role="group" aria-label="Filtrar por categoría"></div>
-          </div>
+          <div class="pickup-grid" id="pickupGrid"></div>
 
-          <div class="product-grid" id="productGrid" aria-live="polite"></div>
-          <div class="menu-empty" id="menuEmpty" hidden>
-            <span aria-hidden="true">🍕</span>
-            <h3>No encontramos esa pizza</h3>
-            <p>Probá con otro nombre o mirá todas las categorías.</p>
-            <button type="button" class="btn btn-ghost" id="clearFiltersBtn">Ver todo el menú</button>
-          </div>
-          <p class="menu-note">💡 Los precios pueden actualizarse sin aviso. Si tenés una duda, escribinos por WhatsApp.
-          </p>
-        </div>
-      </section>
-
-      <!-- PIZZA PARTY -->
-      <section class="section party">
-        <div class="container party-card reveal">
-          <div class="party-media">
-            <img src="img/banners/banner-pizza-party.webp" alt="Servicio de Pizza Party de 14-60" loading="lazy">
-          </div>
-          <div class="party-copy">
-            <p class="eyebrow"><span class="eyebrow-line"></span> Pizza Party</p>
-            <h2>Vamos a cocinar en tu evento</h2>
-            <p>Cumpleaños, reuniones, eventos de escuela o recaudaciones. Llevamos nuestras pizzas LPH y el servicio
-              de cocina para que solo tengas que disfrutar.</p>
-            <ul class="check-list">
-              <li>Empanadas de entrada: carne, árabes y queso</li>
-              <li>Pizzas LPH a elección; las variedades se eligen al reservar</li>
-              <li>Food truck con utensilios y servicio de cocina incluido</li>
-              <li>Duración aproximada: 2:30 hs</li>
-              <li>Mínimo 25 personas · $12.500 por persona</li>
-              <li>Reserva con seña del 40% · cancelación el día del evento</li>
-            </ul>
-            <div class="party-price">
-              <strong>$12.500</strong><span>por persona · mínimo 25</span>
-            </div>
-            <a href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20consultar%20por%20Pizza%20Party%20y%20disponibilidad"
-              target="_blank" rel="noopener" class="btn btn-primary">Consultar fecha y presupuesto <span
-                aria-hidden="true">→</span></a>
+          <div class="contact-grid">
+            <article class="contact-card reveal">
+              <span class="contact-icon" aria-hidden="true">🕒</span>
+              <h3>Horarios de atención</h3>
+              <p><strong>Mañana:</strong> 8:30 a 15:00 hs<br><strong>Noche:</strong> 19:00 a 22:00 hs</p>
+              <p class="muted">Abierto todos los días.</p>
+            </article>
+            <article class="contact-card reveal">
+              <span class="contact-icon" aria-hidden="true">💵</span>
+              <h3>Medios de pago</h3>
+              <p><strong>$9.000 en efectivo</strong> (10% OFF)<br><strong>$10.000 transferencia</strong></p>
+              <p class="muted">Alias bancario: <strong>1460pizzas</strong></p>
+            </article>
+            <article class="contact-card reveal">
+              <span class="contact-icon" aria-hidden="true">🛵</span>
+              <h3>Envíos a domicilio</h3>
+              <p>Delivery propio en San Miguel de Tucumán.</p>
+              <p class="muted">Coordinamos zona y costo de envío al confirmar por WhatsApp.</p>
+            </article>
+            <article class="contact-card reveal">
+              <span class="contact-icon" aria-hidden="true">💬</span>
+              <h3>Contacto y redes</h3>
+              <p><strong>WhatsApp:</strong> 387 409 4801</p>
+              <div class="social-links">
+                <a href="https://www.instagram.com/1460pizzascaseras?xtok=MWlmd3o3cjYyNDM5bQ==" target="_blank"
+                  rel="noopener">Instagram</a>
+                <a href="https://www.facebook.com/share/1GnadgiySB/" target="_blank" rel="noopener">Facebook</a>
+              </div>
+            </article>
           </div>
         </div>
       </section>
@@ -246,78 +350,23 @@
         <div class="container about-grid">
           <div class="about-copy reveal">
             <p class="eyebrow"><span class="eyebrow-line"></span> Nuestra cocina</p>
-            <h2>De nuestra cocina a la tuya</h2>
-            <p>En <strong>14-60 Pizzas Caseras</strong> elaboramos pizzas listas para hornear para que tengas siempre
-              una salida rica, rápida y casera.</p>
-            <p>La idea es simple: que puedas guardarlas en la heladera y hornearlas cuando las necesites. Sin vueltas,
-              con el sabor de una pizza recién hecha.</p>
+            <h2>De nuestra cocina a tu horno en minutos</h2>
+            <p>En <strong>14-60 Pizzas Caseras</strong> elaboramos pizzas artesanales listas para hornear (LPH) para que tengas siempre una comida rica, rápida y bien casera en tu heladera o freezer.</p>
+            <p>Precalentá el horno a <strong>220 °C</strong>, poné la pizza directo sin descongelar durante <strong>12 a 15 minutos</strong> y disfrutá del piso crocante y la muzzarella recién gratinada.</p>
             <div class="about-badges">
-              <span>🍕 Masa fina</span>
-              <span>🧀 Muzzarella de verdad</span>
-              <span>❄️ Listas para hornear</span>
-              <span>🛵 Delivery y retiro</span>
+              <span>🍕 Masa fina artesanal</span>
+              <span>🧀 Muzzarella de primera</span>
+              <span>❄️ Listas para freezer o heladera</span>
+              <span>🔥 12-15 min de horno</span>
             </div>
           </div>
           <div class="about-visual reveal">
             <img src="img/productos/fugazzetta-caramelizada.webp" alt="Fugazzetta caramelizada de 14-60" loading="lazy">
             <div class="about-quote">
               <span aria-hidden="true">“</span>
-              <p>La pizza que saca de apuro y queda como una comida especial.</p>
+              <p>La pizza que te salva cualquier comida y sale como recién hecha en pizzería.</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- CONTACTO -->
-      <section class="section contact" id="contacto">
-        <div class="container">
-          <div class="section-head reveal">
-            <div>
-              <p class="eyebrow"><span class="eyebrow-line"></span> Te esperamos</p>
-              <h2>Horarios y contacto</h2>
-            </div>
-            <p class="section-sub">Pedidos por WhatsApp, delivery y retiro en el local. Consultá zonas y costo de
-              envío al confirmar.</p>
-          </div>
-          <div class="contact-grid">
-            <article class="contact-card reveal">
-              <span class="contact-icon" aria-hidden="true">🕒</span>
-              <h3>Horarios</h3>
-              <p><strong>8:30 a 15:00</strong><br>y <strong>19:00 a 22:00</strong></p>
-              <p class="muted">Atención todos los días.</p>
-            </article>
-            <article class="contact-card reveal">
-              <span class="contact-icon" aria-hidden="true">💳</span>
-              <h3>Pagos</h3>
-              <p><strong>$10.000 transferencia</strong><br><strong>$9.000 efectivo</strong></p>
-              <p class="muted">Alias: <strong>1460pizzas</strong> · 10% menos en efectivo.</p>
-            </article>
-            <article class="contact-card reveal">
-              <span class="contact-icon" aria-hidden="true">💬</span>
-              <h3>Pedidos y redes</h3>
-              <p><strong>387 409 4801</strong><br>WhatsApp principal</p>
-              <div class="social-links">
-                <a href="https://www.instagram.com/1460pizzascaseras?xtok=MWlmd3o3cjYyNDM5bQ==" target="_blank"
-                  rel="noopener">Instagram</a>
-                <a href="https://www.facebook.com/share/1GnadgiySB/" target="_blank" rel="noopener">Facebook</a>
-              </div>
-            </article>
-            <article class="contact-card reveal">
-              <span class="contact-icon" aria-hidden="true">🛵</span>
-              <h3>Delivery</h3>
-              <p>Llevamos tu pedido a domicilio.</p>
-              <p class="muted">Zonas y costo de envío a coordinar por WhatsApp.</p>
-            </article>
-          </div>
-
-          <div class="pickup-head reveal">
-            <div>
-              <p class="eyebrow"><span class="eyebrow-line"></span> Retiro</p>
-              <h3>Elegí el punto que te quede más cerca</h3>
-            </div>
-            <p>El centro de producción atiende por la mañana. Los puntos 28 y 51, por la noche.</p>
-          </div>
-          <div class="pickup-grid" id="pickupGrid"></div>
         </div>
       </section>
     </main>
@@ -327,18 +376,18 @@
       <div class="container footer-grid">
         <div class="footer-brand">
           <img src="img/logo/1460-logo.webp" alt="Logo de 14-60 Pizzas Caseras">
-          <p><strong>14-60 Pizzas Caseras</strong><br>Pizzas LPH · Listas para hornear.</p>
+          <p><strong>14-60 Pizzas Caseras</strong><br>Pizzas LPH · Listas para hornear en San Miguel de Tucumán.</p>
         </div>
         <div class="footer-column">
           <h3>Menú</h3>
           <a href="#menu">Todas las pizzas</a>
-          <a href="#promos">Promos</a>
-          <a href="#nosotros">Nosotros</a>
+          <a href="#promos">Promos y combos</a>
+          <a href="#pizza-party">Pizza Party</a>
         </div>
         <div class="footer-column">
           <h3>Contacto</h3>
           <a href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido" target="_blank"
-            rel="noopener">WhatsApp: 387 409 4801</a>
+            rel="noopener">WhatsApp Central: 387 409 4801</a>
           <a href="https://wa.me/5493874182889?text=Hola%2C%20quiero%20hacer%20un%20pedido" target="_blank"
             rel="noopener">Punto 51: 387 418 2889</a>
           <a href="https://www.instagram.com/1460pizzascaseras?xtok=MWlmd3o3cjYyNDM5bQ==" target="_blank"
@@ -346,11 +395,11 @@
           <a href="https://www.facebook.com/share/1GnadgiySB/" target="_blank" rel="noopener">Facebook</a>
         </div>
         <div class="footer-column">
-          <h3>Pedidos y pagos</h3>
+          <h3>Accesos</h3>
           <a href="#menu">Armar pedido online</a>
           <a href="admin.html">Panel de administración</a>
-          <span>Transferencia: alias 1460pizzas</span>
-          <span>Efectivo: 10% de descuento</span>
+          <span>Alias: 1460pizzas</span>
+          <span>Efectivo: 10% OFF</span>
         </div>
       </div>
       <div class="container footer-bottom">
@@ -360,31 +409,42 @@
     </footer>
   </div>
 
-  <!-- CARRITO -->
+  <!-- BARRA FLOTANTE INFERIOR ESTILO PEDIDOSYA (MÓVIL / TABLET) -->
+  <div class="mobile-cart-bar" id="mobileCartBar" hidden>
+    <button type="button" class="mobile-cart-trigger" id="mobileCartTrigger">
+      <span class="mc-left">
+        <span class="mc-count" id="mobileCartCount">0</span>
+        <span class="mc-label">Ver mi pedido</span>
+      </span>
+      <strong class="mc-total" id="mobileCartTotal">$0</strong>
+    </button>
+  </div>
+
+  <!-- DRAWER CARRITO Y CHECKOUT COMPLETO -->
   <div class="drawer-overlay" id="cartOverlay" hidden></div>
   <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-labelledby="cartTitle">
     <div class="cart-head">
       <div>
-        <p class="eyebrow">Tu pedido</p>
-        <h2 id="cartTitle">Carrito</h2>
+        <p class="eyebrow">Finalizar compra</p>
+        <h2 id="cartTitle">Mi pedido</h2>
       </div>
       <button class="icon-btn" id="cartCloseBtn" type="button" aria-label="Cerrar carrito">✕</button>
     </div>
     <div class="cart-scroll">
       <div id="cartItems" class="cart-items"></div>
       <div class="cart-empty" id="cartEmpty">
-        <span aria-hidden="true">🛒</span>
+        <span aria-hidden="true">🛍️</span>
         <h3>Tu carrito está vacío</h3>
-        <p>Sumá tus pizzas favoritas y en minutos tenés todo listo para hornear.</p>
-        <button type="button" class="btn btn-ghost" id="cartGoMenuBtn">Ver el menú</button>
+        <p>Sumá tus pizzas favoritas del menú y en minutos tenés todo listo para hornear.</p>
+        <button type="button" class="btn btn-primary" id="cartGoMenuBtn">Explorar el menú</button>
       </div>
 
       <form id="checkoutForm" class="checkout" novalidate>
         <fieldset class="field-group">
-          <legend>¿Cómo lo querés?</legend>
+          <legend>¿Cómo querés recibir tu pedido?</legend>
           <div class="segmented" id="deliveryToggle">
-            <button type="button" class="segmented-btn active" data-mode="delivery">🛵 Delivery</button>
-            <button type="button" class="segmented-btn" data-mode="takeaway">🏠 Retiro</button>
+            <button type="button" class="segmented-btn active" data-mode="delivery">🛵 Delivery a domicilio</button>
+            <button type="button" class="segmented-btn" data-mode="takeaway">🏠 Retiro en local</button>
           </div>
         </fieldset>
 
@@ -394,54 +454,53 @@
             <input type="text" id="fNombre" name="nombre" placeholder="Tu nombre" autocomplete="name" required>
           </label>
           <label class="field">
-            <span>Teléfono</span>
+            <span>Teléfono (WhatsApp)</span>
             <input type="tel" id="fTel" name="telefono" placeholder="387 000 0000" autocomplete="tel" required>
           </label>
         </div>
 
         <label class="field" id="addressField">
           <span>Dirección de entrega</span>
-          <input type="text" id="fDir" name="direccion" placeholder="Calle, número y barrio" autocomplete="street-address">
+          <input type="text" id="fDir" name="direccion" placeholder="Calle, número, piso/dpto y barrio" autocomplete="street-address">
         </label>
 
         <fieldset class="field-group">
-          <legend>Forma de pago</legend>
+          <legend>Elegí cómo pagar</legend>
           <div class="payment-options" id="paymentOptions">
             <label class="payment-option">
               <input type="radio" name="pago" value="efectivo" checked>
-              <span><strong>💵 Efectivo</strong><small>10% de descuento · $9.000 por pizza</small></span>
+              <span><strong>💵 Efectivo (10% OFF)</strong><small>$9.000 por pizza · Ahorrás en tu compra</small></span>
             </label>
             <label class="payment-option">
               <input type="radio" name="pago" value="transferencia">
-              <span><strong>🏦 Transferencia</strong><small>Alias 1460pizzas · $10.000 por pizza</small></span>
+              <span><strong>🏦 Transferencia</strong><small>Alias: 1460pizzas · $10.000 por pizza</small></span>
             </label>
           </div>
           <p class="payment-info" id="paymentInfo"></p>
         </fieldset>
 
         <label class="field">
-          <span>Nota para el pedido <small>(opcional)</small></span>
-          <textarea id="fNota" name="nota" rows="2" placeholder="Ej.: bien cocida, sin orégano, tocar timbre…"></textarea>
+          <span>Notas adicionales <small>(opcional)</small></span>
+          <textarea id="fNota" name="nota" rows="2" placeholder="Ej.: punto de retiro preferido, referencias del domicilio, horario…"></textarea>
         </label>
 
         <div class="cart-totals">
-          <div><span>Subtotal</span><strong id="cartSubtotal">$0</strong></div>
-          <div id="discountRow" hidden><span>Descuento efectivo (10%)</span><strong id="cartDiscount">-$0</strong></div>
-          <div><span>Envío</span><strong id="cartShipping">A coordinar</strong></div>
-          <div class="cart-total"><span>Total</span><strong id="cartTotal">$0</strong></div>
+          <div><span>Subtotal (precio lista)</span><strong id="cartSubtotal">$0</strong></div>
+          <div id="discountRow" hidden><span>Descuento efectivo (10% OFF)</span><strong id="cartDiscount">-$0</strong></div>
+          <div><span>Entrega</span><strong id="cartShipping">A coordinar</strong></div>
+          <div class="cart-total"><span>Total a pagar</span><strong id="cartTotal">$0</strong></div>
         </div>
 
         <button type="submit" class="btn btn-primary checkout-btn" id="checkoutBtn">Confirmar pedido</button>
         <a class="btn btn-ghost checkout-wa" id="waFallbackBtn"
           href="https://wa.me/5493874094801?text=Hola%2C%20quiero%20hacer%20un%20pedido" target="_blank"
-          rel="noopener">💬 Pedir por WhatsApp</a>
-        <p class="checkout-note">El costo de envío se coordina por WhatsApp. Al confirmar, guardamos tu pedido y te
-          mostramos el mensaje para enviar.</p>
+          rel="noopener">💬 Enviar directo por WhatsApp</a>
+        <p class="checkout-note">Al confirmar, registramos tu pedido y abrimos WhatsApp con el resumen listo para coordinar la entrega.</p>
       </form>
     </div>
   </aside>
 
-  <!-- MODAL PRODUCTO -->
+  <!-- MODAL DETALLE DE PRODUCTO -->
   <div class="modal-overlay" id="productModalOverlay" hidden>
     <div class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="pmTitle">
       <button class="modal-close" id="productModalClose" type="button" aria-label="Cerrar detalle">✕</button>
