@@ -309,13 +309,13 @@ function renderStoreStatus() {
   wrap.classList.toggle('is-closed', !isOpen);
 
   if (isOpen) {
-    text.textContent = 'Abierto ahora · Recibiendo pedidos';
+    text.textContent = 'Abierto';
   } else if (minutes < 8 * 60 + 30) {
-    text.textContent = 'Cerrado ahora · Abre 8:30 hs (podés encargar)';
+    text.textContent = 'Abre 8:30 hs';
   } else if (minutes < 19 * 60) {
-    text.textContent = 'Abre 19:00 hs · Podés dejar tu pedido';
+    text.textContent = 'Abre 19:00 hs';
   } else {
-    text.textContent = 'Cerrado ahora · Abre mañana 8:30 hs';
+    text.textContent = 'Abre 8:30 hs';
   }
 }
 

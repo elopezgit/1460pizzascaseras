@@ -609,129 +609,55 @@ h3 {
   font-weight: 700;
 }
 
-/* ─── PORTADA DE TIENDA ESTILO PEDIDOSYA ─────────────────────────────────── */
+/* ─── PORTADA DE TIENDA MINIMALISTA ESTILO PEDIDOSYA ─────────────────────── */
 .store-hero {
-  padding: 18px 0 10px;
+  padding: 14px 0 6px;
 }
 
 .store-cover {
   position: relative;
-  height: 220px;
-  border-radius: 22px 22px 0 0;
+  height: 156px;
+  border-radius: 18px 18px 0 0;
   background-color: #1f1f26;
   background-position: center;
   background-size: cover;
   overflow: hidden;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 18px 22px;
 }
 
 .store-cover-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(12, 12, 16, 0.38) 0%,
-    rgba(12, 12, 16, 0.18) 45%,
-    rgba(12, 12, 16, 0.65) 100%
-  );
-}
-
-.store-cover-badges {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.cover-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.cover-pill-red {
-  background: var(--red);
-  color: #fff;
-}
-
-.cover-pill-light {
-  background: rgba(255, 255, 255, 0.9);
-  color: #18181b;
-}
-
-.store-cover-floating {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 13px 7px 7px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #18181b;
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.2);
-}
-
-.store-cover-floating img {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.store-cover-floating strong {
-  display: block;
-  font-size: 0.8rem;
-  font-weight: 800;
-}
-
-.store-cover-floating small {
-  display: block;
-  color: #52525b;
-  font-size: 0.68rem;
+  background: linear-gradient(180deg, rgba(12, 12, 16, 0.1) 0%, rgba(12, 12, 16, 0.42) 100%);
 }
 
 .store-header-card {
   position: relative;
   z-index: 2;
-  margin-top: -22px;
-  padding: 22px 26px;
+  margin-top: -16px;
+  padding: 14px 20px;
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 
 .store-header-main {
   display: flex;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.store-avatar-wrap {
-  margin-top: -48px;
-  flex-shrink: 0;
+  align-items: center;
+  gap: 14px;
 }
 
 .store-avatar {
-  width: 88px;
-  height: 88px;
-  border-radius: 20px;
+  width: 62px;
+  height: 62px;
+  margin-top: -28px;
+  flex-shrink: 0;
+  border-radius: 16px;
   object-fit: contain;
   background: #08080a;
-  padding: 6px;
-  border: 4px solid var(--surface);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  padding: 5px;
+  border: 3px solid var(--surface);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .store-title-block {
@@ -739,150 +665,79 @@ h3 {
   min-width: 0;
 }
 
-.store-title-row {
+.store-title-block h1 {
+  margin: 0 0 4px;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.store-meta-inline {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
-}
-
-.store-title-row h1 {
-  margin: 0;
-  font-size: clamp(1.45rem, 2.5vw, 2rem);
-  font-weight: 800;
-}
-
-.store-verified {
-  display: inline-flex;
   align-items: center;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: var(--green-soft);
-  color: var(--green);
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-.store-lead {
-  margin: 4px 0 12px;
+  gap: 6px 8px;
   color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.store-meta-pills {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.header-status,
-.meta-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text-soft);
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
-.meta-pill-link:hover {
-  border-color: var(--red);
-  color: var(--red);
+.meta-sep {
+  color: var(--line-strong);
 }
 
-.rating-pill {
-  background: var(--gold-soft);
-  border-color: rgba(245, 158, 11, 0.25);
+.meta-item strong {
   color: var(--text);
 }
 
-.rating-pill span {
-  color: var(--muted);
-  font-weight: 500;
+.meta-cash {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.header-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-soft);
+  font-weight: 700;
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--muted);
 }
 
 .header-status.is-open {
-  background: var(--green-soft);
-  border-color: rgba(12, 166, 120, 0.25);
   color: var(--green);
-  font-weight: 700;
 }
 
 .header-status.is-open .status-dot {
   background: var(--green);
-  box-shadow: 0 0 0 3px rgba(12, 166, 120, 0.2);
 }
 
 .header-status.is-closed .status-dot {
   background: var(--red);
 }
 
-.store-quick-cta {
+.store-info-btn {
   flex-shrink: 0;
-}
-
-/* Barra de métricas estilo PedidosYa */
-.store-metrics {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-}
-
-.metric-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 13px;
-  border-radius: 14px;
-  background: var(--surface-2);
+  padding: 7px 13px;
   border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-soft);
+  font-size: 0.76rem;
+  font-weight: 700;
+  transition: border-color 0.2s, color 0.2s;
 }
 
-.metric-highlight {
-  background: var(--green-soft);
-  border-color: rgba(12, 166, 120, 0.25);
-}
-
-.metric-icon {
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--surface);
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-}
-
-.metric-item strong {
-  display: block;
-  font-size: 0.84rem;
-  font-weight: 800;
-  line-height: 1.2;
-}
-
-.metric-item small {
-  display: block;
-  color: var(--muted);
-  font-size: 0.72rem;
-  margin-top: 1px;
+.store-info-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
 }
 
 /* ─── BANNERS PROMOCIONALES HORIZONTALES ─────────────────────────────────── */
@@ -2883,38 +2738,26 @@ h3 {
   }
 
   .store-cover {
-    height: 175px;
-    padding: 14px;
-  }
-
-  .store-cover-floating {
-    display: none;
+    height: 130px;
   }
 
   .store-header-card {
-    padding: 18px;
+    padding: 12px 14px;
   }
 
   .store-header-main {
-    flex-direction: column;
+    align-items: center;
     gap: 12px;
   }
 
-  .store-avatar-wrap {
-    margin-top: -42px;
-  }
-
   .store-avatar {
-    width: 72px;
-    height: 72px;
+    width: 54px;
+    height: 54px;
+    margin-top: -22px;
   }
 
-  .store-quick-cta {
-    width: 100%;
-  }
-
-  .store-quick-cta .btn {
-    width: 100%;
+  .store-info-btn {
+    display: none;
   }
 
   .promo-grid {
