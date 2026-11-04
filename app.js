@@ -1,6 +1,6 @@
 'use strict';
 
-/* ─── 14-60 Pizzas Caseras · lógica del sitio público (Estilo PedidosYa) ──── */
+/* ─── 14-60 Pizzas Caseras · WebApp Mobile-First de Pedidos ───────────────── */
 
 const CART_KEY = 'p1460_cart';
 const CUSTOMER_KEY = 'p1460_customer';
@@ -21,8 +21,7 @@ const state = {
   modalQty: 1,
   lastOrder: loadJSON(LAST_ORDER_KEY, null),
   supabase: null,
-  toastTimer: null,
-  brokenImages: new WeakSet()
+  toastTimer: null
 };
 
 if (state.customer.deliveryMode === 'takeaway') {
@@ -46,7 +45,6 @@ function init() {
   renderStoreStatus();
   applyDeliveryMode(state.deliveryMode, false);
   setFooterYear();
-  observeReveals();
   hideSplash();
   loadFromSupabase();
   setInterval(renderStoreStatus, 60_000);
@@ -55,10 +53,10 @@ function init() {
 function hideSplash() {
   const splash = document.getElementById('splash');
   if (!splash) return;
-  const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 150 : 650;
+  const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 120 : 450;
   setTimeout(() => {
     splash.classList.add('is-hidden');
-    setTimeout(() => splash.remove(), 550);
+    setTimeout(() => splash.remove(), 450);
   }, delay);
 }
 
@@ -76,29 +74,18 @@ function bindEvents() {
     document.getElementById('menu')?.scrollIntoView({ behavior: 'smooth' });
   });
 
-  document.getElementById('mobileNavBtn')?.addEventListener('click', toggleMobileNav);
-  document.querySelectorAll('#mobileNav a').forEach((link) => {
-    link.addEventListener('click', closeMobileNav);
+  // Modal de Info y Locales
+  document.getElementById('openInfoModalBtn')?.addEventListener('click', openInfoModal);
+  document.getElementById('storeInfoCardBtn')?.addEventListener('click', openInfoModal);
+  document.getElementById('footerInfoBtn')?.addEventListener('click', openInfoModal);
+  document.getElementById('infoModalClose')?.addEventListener('click', closeInfoModal);
+  document.getElementById('infoModalOverlay')?.addEventListener('click', (event) => {
+    if (event.target === event.currentTarget) closeInfoModal();
   });
-
-  const handleSearchInput = (value, fromHeader = false) => {
-    state.search = value.trim();
-    const menuInput = document.getElementById('menuSearch');
-    const headerInput = document.getElementById('headerSearchInput');
-    if (menuInput && menuInput.value !== value) menuInput.value = value;
-    if (headerInput && headerInput.value !== value) headerInput.value = value;
-    renderMenu();
-    if (fromHeader && state.search.length === 1) {
-      document.getElementById('catalogStickyBar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   document.getElementById('menuSearch')?.addEventListener('input', (event) => {
-    handleSearchInput(event.target.value, false);
-  });
-
-  document.getElementById('headerSearchInput')?.addEventListener('input', (event) => {
-    handleSearchInput(event.target.value, true);
+    state.search = event.target.value.trim();
+    renderMenu();
   });
 
   document.getElementById('categoryFilters')?.addEventListener('click', (event) => {
@@ -113,9 +100,7 @@ function bindEvents() {
     state.currentCat = 'todos';
     state.search = '';
     const search = document.getElementById('menuSearch');
-    const headerSearch = document.getElementById('headerSearchInput');
     if (search) search.value = '';
-    if (headerSearch) headerSearch.value = '';
     renderCategories();
     renderMenu();
   });
@@ -125,16 +110,6 @@ function bindEvents() {
   document.getElementById('cartItems')?.addEventListener('click', handleCartClick);
   document.getElementById('cartItems')?.addEventListener('input', handleCartNoteInput);
   document.getElementById('sideCartItems')?.addEventListener('click', handleCartClick);
-
-  document.querySelector('[data-add-party]')?.addEventListener('click', () => {
-    const partyItem = state.menu.find(
-      (item) => String(item.id) === 'default-pizza-party' || normalize(item.name).includes('pizza party')
-    );
-    if (partyItem) {
-      addToCart(partyItem.id, partyItem.minQty || 25);
-      openCart();
-    }
-  });
 
   document.getElementById('deliveryToggle')?.addEventListener('click', (event) => {
     const button = event.target.closest('[data-mode]');
@@ -155,8 +130,13 @@ function bindEvents() {
     }
   });
 
-  ['fNombre', 'fTel', 'fDir', 'fNota'].forEach((id) => {
+  document.getElementById('copyAliasBtn')?.addEventListener('click', (event) => {
+    copyAliasToClipboard(BRAND.alias, event.currentTarget);
+  });
+
+  ['fNombre', 'fTel', 'fDir', 'fNota', 'fPickupPoint'].forEach((id) => {
     document.getElementById(id)?.addEventListener('input', saveCustomerDraft);
+    document.getElementById(id)?.addEventListener('change', saveCustomerDraft);
   });
 
   document.getElementById('checkoutForm')?.addEventListener('submit', submitOrder);
@@ -176,6 +156,52 @@ function bindEvents() {
 
   document.addEventListener('keydown', handleEscape);
   window.addEventListener('scroll', onScroll, { passive: true });
+}
+
+/* ─── COPIAR ALIAS AL PORTAPAPELES ───────────────────────────────────────── */
+
+async function copyAliasToClipboard(aliasText, buttonEl) {
+  const alias = String(aliasText || BRAND.alias || '1460pizzas').trim();
+  let copied = false;
+
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(alias);
+      copied = true;
+    }
+  } catch {
+    copied = false;
+  }
+
+  if (!copied) {
+    try {
+      const temp = document.createElement('textarea');
+      temp.value = alias;
+      temp.setAttribute('readonly', '');
+      temp.style.position = 'fixed';
+      temp.style.opacity = '0';
+      document.body.appendChild(temp);
+      temp.select();
+      temp.setSelectionRange(0, alias.length);
+      copied = document.execCommand('copy');
+      temp.remove();
+    } catch {
+      copied = false;
+    }
+  }
+
+  if (buttonEl) {
+    const original = buttonEl.dataset.originalLabel || '📋 Copiar alias';
+    buttonEl.dataset.originalLabel = original;
+    buttonEl.textContent = '✓ ¡Alias copiado!';
+    buttonEl.classList.add('is-copied');
+    setTimeout(() => {
+      buttonEl.textContent = original;
+      buttonEl.classList.remove('is-copied');
+    }, 2400);
+  }
+
+  showToast(`✓ Alias "${alias}" copiado al portapapeles`);
 }
 
 function handleProductGridClick(event) {
@@ -255,15 +281,17 @@ function handleEscape(event) {
     closeProductModal();
     return;
   }
-  if (document.getElementById('cartDrawer')?.classList.contains('is-open')) {
-    closeCart();
+  if (!document.getElementById('infoModalOverlay')?.hidden) {
+    closeInfoModal();
     return;
   }
-  closeMobileNav();
+  if (document.getElementById('cartDrawer')?.classList.contains('is-open')) {
+    closeCart();
+  }
 }
 
 function onScroll() {
-  document.getElementById('siteHeader')?.classList.toggle('is-scrolled', window.scrollY > 12);
+  document.getElementById('siteHeader')?.classList.toggle('is-scrolled', window.scrollY > 8);
 }
 
 /* ─── TEMA (MODO CLARO POR DEFECTO) ──────────────────────────────────────── */
@@ -284,7 +312,7 @@ function applyTheme(theme) {
     button.setAttribute('aria-label', theme === 'dark' ? 'Activar tema claro' : 'Activar tema oscuro');
   }
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.content = theme === 'dark' ? '#181920' : '#f6f6f9';
+  if (meta) meta.content = theme === 'dark' ? '#181920' : '#f5f6f9';
 }
 
 function toggleTheme() {
@@ -373,7 +401,6 @@ function renderBanners() {
           <span class="promo-kicker">${escapeHTML(kicker)}</span>
           <h3>${escapeHTML(banner.title || 'Nuestra pizza')}</h3>
           <p>${escapeHTML(banner.subtitle || 'Elegí tus favoritas y pedí online.')}</p>
-          <span class="promo-link">Pedir ahora <span aria-hidden="true">→</span></span>
         </div>
       </a>
     `;
@@ -388,22 +415,35 @@ function renderPickupPoints() {
   grid.innerHTML = points.map((point) => {
     const phone = String(point.whatsapp || BRAND.whatsapp).replace(/\D/g, '');
     return `
-      <article class="pickup-card reveal is-visible">
+      <article class="pickup-card">
         <span class="pickup-icon" aria-hidden="true">${escapeHTML(point.icon || '📍')}</span>
         <div>
-          <span class="pickup-tag">Punto de retiro</span>
           <h3>${escapeHTML(point.name)}</h3>
           <p>${escapeHTML(point.address)}</p>
-          <p class="pickup-hours">🕒 Horario: ${escapeHTML(point.hours)}</p>
+          <p class="pickup-hours">🕒 ${escapeHTML(point.hours)}</p>
           <div class="pickup-links">
-            <a href="${escapeAttr(point.mapsUrl)}" target="_blank" rel="noopener">📍 Ver en Google Maps</a>
+            <a href="${escapeAttr(point.mapsUrl)}" target="_blank" rel="noopener">📍 Mapa</a>
             <a href="https://wa.me/${escapeAttr(phone)}?text=${encodeURIComponent(`Hola, quiero consultar por el retiro en ${point.name}.`)}"
-              target="_blank" rel="noopener">💬 Consultar WhatsApp</a>
+              target="_blank" rel="noopener">💬 WhatsApp</a>
           </div>
         </div>
       </article>
     `;
   }).join('');
+}
+
+/* ─── MODAL DE INFO Y PUNTOS DE RETIRO ───────────────────────────────────── */
+
+function openInfoModal() {
+  const overlay = document.getElementById('infoModalOverlay');
+  if (overlay) overlay.hidden = false;
+  syncBodyScroll();
+}
+
+function closeInfoModal() {
+  const overlay = document.getElementById('infoModalOverlay');
+  if (overlay) overlay.hidden = true;
+  syncBodyScroll();
 }
 
 /* ─── MENÚ ESTILO PEDIDOSYA (AGRUPADO POR CATEGORÍA + TARJETAS HORIZONTALES) ─ */
@@ -437,19 +477,17 @@ function renderMenu() {
   grid.hidden = false;
   if (empty) empty.hidden = true;
 
-  // Si estamos en "todos" y sin búsqueda, agrupamos por secciones como en PedidosYa
   if (state.currentCat === 'todos' && !query) {
     const categories = [...state.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
     const sectionsHTML = [];
 
-    // Sección destacada de Más Pedidas arriba de todo
     const hotItems = filtered.filter((item) => item.hot);
     if (hotItems.length > 0) {
       sectionsHTML.push(`
         <div class="menu-category-group">
           <div class="menu-group-header">
             <h3>🔥 Más pedidas</h3>
-            <span>Las favoritas de nuestros clientes</span>
+            <span>Favoritas</span>
           </div>
           <div class="menu-cards-grid">
             ${hotItems.map(productCardHTML).join('')}
@@ -465,7 +503,7 @@ function renderMenu() {
         <div class="menu-category-group" id="cat-${escapeAttr(cat.slug)}">
           <div class="menu-group-header">
             <h3>${escapeHTML(cat.icon || '🍕')} ${escapeHTML(cat.name)}</h3>
-            <span>${catItems.length} ${catItems.length === 1 ? 'opción' : 'opciones'}</span>
+            <span>${catItems.length}</span>
           </div>
           <div class="menu-cards-grid">
             ${catItems.map(productCardHTML).join('')}
@@ -474,7 +512,6 @@ function renderMenu() {
       `);
     });
 
-    // Productos con categoría no listada
     const knownSlugs = new Set(categories.map((c) => c.slug));
     const otherItems = filtered.filter((item) => !knownSlugs.has(item.cat));
     if (otherItems.length) {
@@ -482,7 +519,7 @@ function renderMenu() {
         <div class="menu-category-group">
           <div class="menu-group-header">
             <h3>🍕 Otras variedades</h3>
-            <span>${otherItems.length} opciones</span>
+            <span>${otherItems.length}</span>
           </div>
           <div class="menu-cards-grid">
             ${otherItems.map(productCardHTML).join('')}
@@ -495,7 +532,6 @@ function renderMenu() {
     return;
   }
 
-  // Vista filtrada por categoría o por búsqueda
   const title = query
     ? `🔎 Resultados para "${escapeHTML(state.search)}"`
     : state.currentCat === 'populares'
@@ -506,7 +542,7 @@ function renderMenu() {
     <div class="menu-category-group">
       <div class="menu-group-header">
         <h3>${title}</h3>
-        <span>${filtered.length} ${filtered.length === 1 ? 'producto' : 'productos'}</span>
+        <span>${filtered.length}</span>
       </div>
       <div class="menu-cards-grid">
         ${filtered.map(productCardHTML).join('')}
@@ -523,7 +559,7 @@ function productCardHTML(product) {
   const cashPrice = getCashPrice(product.price);
 
   const badgeHTML = product.hot
-    ? '<span class="py-badge py-badge-hot">🔥 Más pedida</span>'
+    ? '<span class="py-badge py-badge-hot">🔥 Popular</span>'
     : `<span class="py-badge py-badge-cat">${escapeHTML(categoryName(product.cat))}</span>`;
 
   const actionControl = inCartQty > 0
@@ -553,10 +589,10 @@ function productCardHTML(product) {
           <div class="product-price-block">
             <div class="price-main-row">
               <span class="product-price">${formatPrice(cashPrice)}</span>
-              <span class="cash-pill">💵 10% OFF efvo.</span>
+              <span class="cash-pill">10% OFF efvo.</span>
             </div>
             <span class="product-transfer">
-              Lista / Transf.: <strong>${formatPrice(product.price)}</strong> ${isPerPerson ? 'por persona (mín. 25)' : 'c/u'}
+              Transf.: <strong>${formatPrice(product.price)}</strong> ${isPerPerson ? '/ persona (mín. 25)' : 'c/u'}
             </span>
           </div>
         </div>
@@ -625,14 +661,14 @@ function renderProductModal() {
     <div class="pm-body">
       <span class="pm-cat">${escapeHTML(categoryName(product.cat))}</span>
       <h2 id="pmTitle">${escapeHTML(product.name)}</h2>
-      <div class="pm-rating"><span>⭐ ${rating}</span> · Lista para hornear en 12-15 min</div>
+      <div class="pm-rating"><span>⭐ ${rating}</span> · Lista para hornear</div>
       <div class="pm-prices">
         <div class="pm-price-card pm-price-cash">
           <small>💵 Efectivo (10% OFF)</small>
           <strong>${formatPrice(getCashPrice(product.price))}</strong>
         </div>
         <div class="pm-price-card">
-          <small>🏦 Transferencia (${productUnit(product) === 'persona' ? 'por persona' : 'precio lista'})</small>
+          <small>🏦 Transferencia (${productUnit(product) === 'persona' ? 'por persona' : 'lista'})</small>
           <strong>${formatPrice(product.price)}</strong>
         </div>
       </div>
@@ -644,9 +680,8 @@ function renderProductModal() {
           <p>${escapeHTML(product.ingredients || 'Consultá los ingredientes por WhatsApp.')}</p>
         </div>
         <div>
-          <h3>Cómo hornear</h3>
+          <h3>Cocción</h3>
           <p>${escapeHTML(product.prepDesc || 'Horneá a 220 °C durante 12-15 minutos, sin descongelar.')}</p>
-          ${product.prepTime ? `<span class="pm-time">⏱ ${escapeHTML(product.prepTime)}</span>` : ''}
         </div>
       </div>
       <div class="pm-actions">
@@ -656,7 +691,7 @@ function renderProductModal() {
           <button type="button" id="pmPlusBtn" aria-label="Sumar una unidad">+</button>
         </div>
         <button type="button" class="pm-add-btn" id="pmAddBtn">
-          Agregar a mi pedido · ${formatPrice(getCashPrice(product.price) * state.modalQty)} efvo.
+          Sumar · ${formatPrice(getCashPrice(product.price) * state.modalQty)} efvo.
         </button>
       </div>
     </div>
@@ -687,7 +722,7 @@ function updateModalQtyAndPrice() {
   const button = document.getElementById('pmAddBtn');
   if (qty) qty.textContent = state.modalQty;
   if (button) {
-    button.textContent = `Agregar a mi pedido · ${formatPrice(getCashPrice(product.price) * state.modalQty)} efvo.`;
+    button.textContent = `Sumar · ${formatPrice(getCashPrice(product.price) * state.modalQty)} efvo.`;
   }
 }
 
@@ -708,7 +743,6 @@ function openCart() {
   drawer.classList.add('is-open');
   drawer.setAttribute('aria-hidden', 'false');
   syncBodyScroll();
-  setTimeout(() => document.getElementById('cartCloseBtn')?.focus(), 30);
 }
 
 function closeCart() {
@@ -724,8 +758,9 @@ function closeCart() {
 function syncBodyScroll() {
   const cartOpen = document.getElementById('cartDrawer')?.classList.contains('is-open');
   const productOpen = !document.getElementById('productModalOverlay')?.hidden;
+  const infoOpen = !document.getElementById('infoModalOverlay')?.hidden;
   const successOpen = !document.getElementById('successOverlay')?.hidden;
-  document.body.classList.toggle('no-scroll', Boolean(cartOpen || productOpen || successOpen));
+  document.body.classList.toggle('no-scroll', Boolean(cartOpen || productOpen || infoOpen || successOpen));
 }
 
 function setCartQty(id, quantity) {
@@ -740,7 +775,7 @@ function setCartQty(id, quantity) {
   saveCart();
   renderCart();
   renderMenu();
-  showToast(`${product.name} actualizado en tu pedido`);
+  showToast(`✓ ${product.name} actualizado`);
 }
 
 function addToCart(id, quantity = 1) {
@@ -760,15 +795,7 @@ function addToCart(id, quantity = 1) {
   saveCart();
   renderCart();
   renderMenu();
-  showToast(`✓ ${product.name} sumado a tu pedido`);
-
-  const cartButton = document.getElementById('cartOpenBtn');
-  if (cartButton && typeof cartButton.animate === 'function') {
-    cartButton.animate(
-      [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }],
-      { duration: 280, easing: 'ease-out' }
-    );
-  }
+  showToast(`✓ ${product.name} agregado`);
 }
 
 function changeCartQty(id, delta) {
@@ -826,13 +853,11 @@ function renderCart() {
   const count = entries.reduce((sum, entry) => sum + entry.qty, 0);
   const cashTotal = Math.round(totals.subtotalLista * (1 - Number(BRAND.cashDiscount || 0)));
 
-  // Contadores de unidades
   ['cartCount', 'sideCartCount', 'mobileCartCount'].forEach((id) => {
     const el = document.getElementById(id);
     if (el) el.textContent = String(count);
   });
 
-  // Drawer de carrito completo
   const items = document.getElementById('cartItems');
   const empty = document.getElementById('cartEmpty');
   const form = document.getElementById('checkoutForm');
@@ -840,7 +865,6 @@ function renderCart() {
   if (empty) empty.hidden = entries.length > 0;
   if (form) form.hidden = entries.length === 0;
 
-  // Carrito lateral sticky (escritorio)
   const sideItems = document.getElementById('sideCartItems');
   const sideEmpty = document.getElementById('sideCartEmpty');
   const sideFooter = document.getElementById('sideCartFooter');
@@ -855,12 +879,11 @@ function renderCart() {
   setText('sideCashTotal', formatPrice(cashTotal));
   setText('sideBtnTotal', formatPrice(totals.total));
 
-  // Barra flotante móvil
   const mobileBar = document.getElementById('mobileCartBar');
   if (mobileBar) mobileBar.hidden = entries.length === 0;
+  document.body.classList.toggle('has-mobile-cart', entries.length > 0);
   setText('mobileCartTotal', formatPrice(totals.total));
 
-  // Totales en el drawer
   setText('cartSubtotal', formatPrice(totals.subtotalLista));
   setText('cartDiscount', `-${formatPrice(totals.descuento)}`);
   setText('cartTotal', formatPrice(totals.total));
@@ -916,6 +939,12 @@ function getCashPrice(price) {
 
 function updatePaymentInfo(discount = 0) {
   const info = document.getElementById('paymentInfo');
+  const aliasBox = document.getElementById('aliasCopyBox');
+  const aliasValue = document.getElementById('aliasTextValue');
+
+  if (aliasValue) aliasValue.textContent = BRAND.alias || '1460pizzas';
+  if (aliasBox) aliasBox.hidden = state.paymentMethod !== 'transferencia';
+
   if (!info) return;
 
   if (state.paymentMethod === 'efectivo') {
@@ -923,7 +952,7 @@ function updatePaymentInfo(discount = 0) {
       ? `💵 Pagando en efectivo ahorrás <strong>${formatPrice(discount)}</strong> (10% OFF incluido).`
       : '💵 Pagás en efectivo al recibir o retirar el pedido.';
   } else {
-    info.innerHTML = `🏦 Transferí al alias <strong>${escapeHTML(BRAND.alias)}</strong> y enviá el comprobante por WhatsApp.`;
+    info.innerHTML = `🏦 Copiá el alias de arriba y enviá el comprobante por WhatsApp al confirmar.`;
   }
 }
 
@@ -964,6 +993,9 @@ function hydrateCustomerForm() {
   setValue('fNombre', state.customer.name || '');
   setValue('fTel', state.customer.phone || '');
   setValue('fDir', state.customer.address || '');
+  if (state.customer.pickupPoint) {
+    setValue('fPickupPoint', state.customer.pickupPoint);
+  }
   applyDeliveryMode(state.deliveryMode, false);
 }
 
@@ -973,6 +1005,7 @@ function saveCustomerDraft() {
     name: document.getElementById('fNombre')?.value.trim() || '',
     phone: document.getElementById('fTel')?.value.trim() || '',
     address: document.getElementById('fDir')?.value.trim() || '',
+    pickupPoint: document.getElementById('fPickupPoint')?.value || '',
     deliveryMode: state.deliveryMode
   };
   localStorage.setItem(CUSTOMER_KEY, JSON.stringify(state.customer));
@@ -987,8 +1020,11 @@ function applyDeliveryMode(mode, persist = true) {
 
   const addressField = document.getElementById('addressField');
   const addressInput = document.getElementById('fDir');
+  const pickupField = document.getElementById('pickupPointField');
+
   if (addressField) addressField.hidden = state.deliveryMode !== 'delivery';
   if (addressInput) addressInput.required = state.deliveryMode === 'delivery';
+  if (pickupField) pickupField.hidden = state.deliveryMode !== 'takeaway';
 
   setText('cartShipping', state.deliveryMode === 'delivery' ? 'A coordinar' : 'Retiro en local');
 
@@ -1010,16 +1046,17 @@ async function submitOrder(event) {
   const nombre = document.getElementById('fNombre')?.value.trim() || '';
   const telefono = document.getElementById('fTel')?.value.trim() || '';
   const direccion = document.getElementById('fDir')?.value.trim() || '';
+  const pickupPoint = document.getElementById('fPickupPoint')?.value || 'Centro de producción (Luis Patrón Costa 1460)';
   const nota = document.getElementById('fNota')?.value.trim() || '';
 
   if (!nombre) {
-    showToast('Completá tu nombre y apellido.', 'error');
+    showToast('Completá tu nombre.', 'error');
     document.getElementById('fNombre')?.focus();
     return;
   }
 
   if (!telefono) {
-    showToast('Completá tu teléfono para coordinar el pedido.', 'error');
+    showToast('Completá tu teléfono.', 'error');
     document.getElementById('fTel')?.focus();
     return;
   }
@@ -1036,7 +1073,8 @@ async function submitOrder(event) {
     nombre,
     telefono,
     modalidad: state.deliveryMode,
-    direccion: state.deliveryMode === 'delivery' ? direccion : '',
+    direccion: state.deliveryMode === 'delivery' ? direccion : pickupPoint,
+    pickupPoint: state.deliveryMode === 'takeaway' ? pickupPoint : '',
     pago: state.paymentMethod,
     nota,
     items: entries.map((entry) => ({
@@ -1067,13 +1105,14 @@ async function submitOrder(event) {
       empresa_id: EMPRESA_ID,
       customer_name: nombre,
       customer_phone: telefono,
-      delivery_address: state.deliveryMode === 'delivery' ? direccion : null,
-      comment: `Pedido ${order.codigo} · ${state.deliveryMode === 'delivery' ? 'Delivery' : 'Retiro'} · Pago: ${state.paymentMethod}${nota ? ` · Nota: ${nota}` : ''}`,
+      delivery_address: state.deliveryMode === 'delivery' ? direccion : `Retiro: ${pickupPoint}`,
+      comment: `Pedido ${order.codigo} · ${state.deliveryMode === 'delivery' ? 'Delivery' : `Retiro (${pickupPoint})`} · Pago: ${state.paymentMethod}${nota ? ` · Nota: ${nota}` : ''}`,
       total: totals.total,
       status: 'pendiente',
       items: {
         codigo: order.codigo,
         modalidad: order.modalidad,
+        puntoRetiro: order.pickupPoint || null,
         pago: order.pago,
         envio: 'a coordinar',
         notas: nota,
@@ -1088,18 +1127,17 @@ async function submitOrder(event) {
     const { error } = await client.from('orders').insert(payload);
     if (error) throw error;
 
-    await saveCustomerRecord({ nombre, telefono, direccion });
+    await saveCustomerRecord({ nombre, telefono, direccion: state.deliveryMode === 'delivery' ? direccion : null });
     state.lastOrder = { ...order, saved: true };
     persistLastOrder();
     clearCart();
     closeCart();
     showSuccessModal(state.lastOrder, true);
-    showToast('Pedido guardado. Ya podés enviarlo por WhatsApp.');
   } catch (error) {
     console.error('Error al guardar el pedido:', error);
     state.lastOrder = { ...order, saved: false };
     showSuccessModal(state.lastOrder, false);
-    showToast('No pudimos guardar el pedido en el sistema. Podés enviarlo por WhatsApp.', 'error');
+    showToast('Podés enviar tu pedido directamente por WhatsApp.', 'error');
   } finally {
     setButtonLoading(button, false);
   }
@@ -1121,7 +1159,7 @@ async function saveCustomerRecord({ nombre, telefono, direccion }) {
     if (findError) throw findError;
 
     if (existing?.id) {
-      const { error } = await client
+      await client
         .from('customers')
         .update({
           name: nombre,
@@ -1130,9 +1168,8 @@ async function saveCustomerRecord({ nombre, telefono, direccion }) {
         })
         .eq('id', existing.id)
         .eq('empresa_id', EMPRESA_ID);
-      if (error) throw error;
     } else {
-      const { error } = await client
+      await client
         .from('customers')
         .insert({
           empresa_id: EMPRESA_ID,
@@ -1141,7 +1178,6 @@ async function saveCustomerRecord({ nombre, telefono, direccion }) {
           address: direccion || null,
           email: null
         });
-      if (error) throw error;
     }
   } catch (error) {
     console.warn('No se pudo actualizar la ficha del cliente:', error);
@@ -1165,18 +1201,33 @@ function showSuccessModal(order, saved) {
 
   const modal = order.modalidad === 'delivery'
     ? 'Delivery a domicilio'
-    : 'Retiro en local (elegís el punto al coordinar)';
+    : `Retiro: ${order.pickupPoint || 'En local'}`;
   const pago = order.pago === 'efectivo'
-    ? `Efectivo · 10% OFF`
+    ? 'Efectivo · 10% OFF'
     : `Transferencia · alias ${BRAND.alias}`;
+
+  const aliasCopyHTML = order.pago === 'transferencia'
+    ? `
+      <div class="alias-copy-box alias-copy-box-modal">
+        <div class="alias-copy-info">
+          <small>Transferí al alias</small>
+          <strong>${escapeHTML(BRAND.alias)}</strong>
+        </div>
+        <button type="button" class="btn-copy-alias" id="modalCopyAliasBtn">
+          📋 Copiar alias
+        </button>
+      </div>
+    `
+    : '';
 
   content.innerHTML = `
     <div class="success-check" aria-hidden="true">✓</div>
-    <h2 id="successTitle">${saved ? '¡Pedido confirmado!' : 'Pedido listo para enviar'}</h2>
+    <h2 id="successTitle">${saved ? '¡Pedido listo!' : 'Enviar pedido'}</h2>
     <p>${saved
-      ? 'Registramos tu pedido. Tocá el botón de abajo para enviarlo por WhatsApp y coordinar la entrega.'
-      : 'No pudimos guardarlo en el sistema, pero podés enviarlo igual por WhatsApp.'}</p>
+      ? 'Guardamos tu pedido. Tocá el botón verde para enviarlo por WhatsApp.'
+      : 'Tocá el botón para enviar tu pedido por WhatsApp.'}</p>
     <span class="success-code">${escapeHTML(order.codigo)}</span>
+    ${aliasCopyHTML}
     <div class="success-summary">
       ${order.items.map((item) => `
         <div class="success-summary-row">
@@ -1187,10 +1238,6 @@ function showSuccessModal(order, saved) {
       <div class="success-summary-row">
         <span>${escapeHTML(modal)}</span>
         <strong>${escapeHTML(pago)}</strong>
-      </div>
-      <div class="success-summary-row">
-        <span>Subtotal</span>
-        <strong>${formatPrice(order.subtotalLista)}</strong>
       </div>
       ${order.descuento > 0 ? `
         <div class="success-summary-row discount">
@@ -1204,18 +1251,17 @@ function showSuccessModal(order, saved) {
       </div>
     </div>
     <div class="success-actions">
-      <a class="btn btn-primary" id="successWaBtn" href="${escapeAttr(buildWhatsAppMessage(order))}"
+      <a class="btn btn-whatsapp" id="successWaBtn" href="${escapeAttr(buildWhatsAppMessage(order))}"
         target="_blank" rel="noopener">💬 Enviar pedido por WhatsApp</a>
       <button class="btn btn-ghost" id="successContinueBtn" type="button">
-        ${saved ? 'Seguir viendo el menú' : 'Volver al carrito'}
+        ${saved ? 'Volver al menú' : 'Volver al carrito'}
       </button>
     </div>
-    <p class="success-note">${saved
-      ? (order.pago === 'transferencia'
-        ? `Transferí al alias ${escapeHTML(BRAND.alias)} y enviá el comprobante por WhatsApp.`
-        : 'El costo de envío se coordina al instante por WhatsApp.')
-      : 'Tu carrito sigue disponible para que puedas reintentar.'}</p>
   `;
+
+  document.getElementById('modalCopyAliasBtn')?.addEventListener('click', (event) => {
+    copyAliasToClipboard(BRAND.alias, event.currentTarget);
+  });
 
   document.getElementById('successContinueBtn')?.addEventListener('click', () => {
     closeSuccessModal();
@@ -1225,7 +1271,6 @@ function showSuccessModal(order, saved) {
   const overlay = document.getElementById('successOverlay');
   if (overlay) overlay.hidden = false;
   syncBodyScroll();
-  setTimeout(() => document.getElementById('successCloseBtn')?.focus(), 30);
 }
 
 function closeSuccessModal() {
@@ -1248,7 +1293,7 @@ function buildWhatsAppMessage(order) {
   if (order.modalidad === 'delivery') {
     lines.push(`📍 *Dirección:* ${order.direccion}`);
   } else {
-    lines.push('📍 *Retiro:* Coordinar punto de retiro (Luis Patrón Costa 1460 / Punto 28 / Punto 51)');
+    lines.push(`📍 *Punto de retiro:* ${order.pickupPoint || 'Coordinar punto de retiro'}`);
   }
 
   lines.push(`💳 *Pago:* ${order.pago === 'efectivo'
@@ -1279,9 +1324,6 @@ function buildWhatsAppMessage(order) {
     lines.push(`📝 *Nota:* ${order.nota}`);
   }
 
-  lines.push('');
-  lines.push('¡Gracias por elegir 14-60!');
-
   return `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
 }
 
@@ -1308,8 +1350,6 @@ function buildCartWhatsAppLink() {
     lines.push(`*Total transferencia: ${formatPrice(totals.total)}* (alias ${BRAND.alias})`);
   }
   lines.push('Envío: A coordinar');
-  lines.push('');
-  lines.push('¿Me confirman disponibilidad y forma de entrega?');
 
   return `https://wa.me/${BRAND.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
 }
@@ -1361,9 +1401,7 @@ async function loadFromSupabase() {
         .order('sort_order')
     ]);
 
-    if (productsResult.error) {
-      console.warn('No se pudieron cargar los productos desde Supabase:', productsResult.error);
-    } else if (productsResult.data?.length) {
+    if (!productsResult.error && productsResult.data?.length) {
       const previousMenu = state.menu;
       const nextMenu = productsResult.data.map((product) => mapSupabaseProduct(product));
       migrateCartByName(previousMenu, nextMenu);
@@ -1371,9 +1409,7 @@ async function loadFromSupabase() {
       saveCart();
     }
 
-    if (bannersResult.error) {
-      console.warn('No se pudieron cargar los banners desde Supabase:', bannersResult.error);
-    } else if (bannersResult.data?.length) {
+    if (!bannersResult.error && bannersResult.data?.length) {
       state.banners = bannersResult.data.map((banner) => ({
         id: banner.id,
         image: banner.image_url,
@@ -1389,16 +1425,12 @@ async function loadFromSupabase() {
     renderMenu();
     renderCart();
   } catch (error) {
-    console.warn('No se pudo conectar con Supabase. Se usa el catálogo local:', error);
+    console.warn('Se usa el catálogo local:', error);
   }
 }
 
 function productUnit(product) {
   return product?.unit || product?.unit_type || 'unidad';
-}
-
-function unitLabel(product) {
-  return productUnit(product) === 'persona' ? 'por persona' : 'transferencia';
 }
 
 function mapSupabaseProduct(product) {
@@ -1498,7 +1530,7 @@ function setButtonLoading(button, loading) {
   if (!button) return;
   if (loading) {
     button.dataset.originalText = button.textContent;
-    button.textContent = 'Guardando pedido…';
+    button.textContent = 'Procesando…';
     button.disabled = true;
   } else {
     button.textContent = button.dataset.originalText || 'Confirmar pedido';
@@ -1515,54 +1547,10 @@ function showToast(message, type = '') {
   toast.classList.add('is-visible');
   state.toastTimer = setTimeout(() => {
     toast.classList.remove('is-visible');
-  }, 3000);
+  }, 2600);
 }
 
 function setFooterYear() {
   const year = document.getElementById('footerYear');
   if (year) year.textContent = String(new Date().getFullYear());
-}
-
-function toggleMobileNav() {
-  const nav = document.getElementById('mobileNav');
-  const button = document.getElementById('mobileNavBtn');
-  if (!nav || !button) return;
-  const isOpen = nav.hidden;
-  nav.hidden = !isOpen;
-  nav.classList.toggle('is-open', isOpen);
-  button.setAttribute('aria-expanded', String(isOpen));
-}
-
-function closeMobileNav() {
-  const nav = document.getElementById('mobileNav');
-  const button = document.getElementById('mobileNavBtn');
-  if (!nav || !button) return;
-  nav.hidden = true;
-  nav.classList.remove('is-open');
-  button.setAttribute('aria-expanded', 'false');
-}
-
-function observeReveals() {
-  const elements = document.querySelectorAll('.reveal');
-  if (!elements.length) return;
-
-  if (!('IntersectionObserver' in window)) {
-    elements.forEach((element) => element.classList.add('is-visible'));
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
-
-  elements.forEach((element) => observer.observe(element));
-
-  setTimeout(() => {
-    elements.forEach((element) => element.classList.add('is-visible'));
-  }, 3000);
 }
