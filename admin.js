@@ -51,6 +51,16 @@ const BANNER_IMAGE_PRESETS = [
 
 const CATEGORY_ICON_PRESETS = ['🍕', '⭐', '🧅', '🎉', '🧀', '🌶️', '🌿', '🍖', '🔥', '🥟', '🥤', '🍺', '🍽️'];
 
+const KANBAN_COLUMNS = [
+  { key: 'pendiente', label: 'Pendientes', icon: '⏳', next: 'confirmado', nextLabel: 'Confirmar →' },
+  { key: 'confirmado', label: 'Confirmados', icon: '✅', next: 'preparando', nextLabel: 'Preparar →' },
+  { key: 'preparando', label: 'En preparación', icon: '🔥', next: 'listo', nextLabel: 'Listo →' },
+  { key: 'listo', label: 'Listos', icon: '📦', next: 'enviado', nextLabel: 'Enviar →' },
+  { key: 'enviado', label: 'Enviados', icon: '🛵', next: 'entregado', nextLabel: 'Entregar ✓' },
+  { key: 'entregado', label: 'Entregados', icon: '🎉', next: null, nextLabel: '' },
+  { key: 'cancelado', label: 'Cancelados', icon: '❌', next: null, nextLabel: '' }
+];
+
 const adminState = {
   orders: [],
   products: [],
@@ -58,6 +68,8 @@ const adminState = {
   banners: [],
   customers: [],
   view: 'resumen',
+  ordersMode: 'kanban',
+  draggedOrderId: null,
   orderSearch: '',
   orderStatus: 'todos',
   productSearch: '',
@@ -200,6 +212,11 @@ function bindAdminEvents() {
   document.addEventListener('change', handleAdminChange);
   document.addEventListener('input', handleAdminInput);
   document.addEventListener('submit', handleAdminSubmit);
+  document.addEventListener('dragstart', handleKanbanDragStart);
+  document.addEventListener('dragend', handleKanbanDragEnd);
+  document.addEventListener('dragover', handleKanbanDragOver);
+  document.addEventListener('dragleave', handleKanbanDragLeave);
+  document.addEventListener('drop', handleKanbanDrop);
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
       closeModal();
@@ -552,18 +569,35 @@ function renderRecentOrders() {
   }).join('');
 }
 
+function normalizeKanbanStatus(rawStatus) {
+  const s = normalizeStatus(rawStatus);
+  if (s === 'en_preparacion') return 'preparando';
+  if (KANBAN_COLUMNS.some((col) => col.key === s)) return s;
+  return 'pendiente';
+}
+
 function renderOrders() {
+  const kanbanBoard = document.getElementById('ordersKanbanBoard');
+  const tablePanel = document.getElementById('ordersTablePanel');
   const body = document.getElementById('ordersBody');
-  if (!body) return;
+
+  document.querySelectorAll('[data-orders-mode]').forEach((btn) => {
+    btn.classList.toggle('is-active', btn.dataset.ordersMode === adminState.ordersMode);
+  });
+
+  if (kanbanBoard && tablePanel) {
+    kanbanBoard.hidden = adminState.ordersMode !== 'kanban';
+    tablePanel.hidden = adminState.ordersMode !== 'table';
+  }
 
   const query = normalizeText(adminState.orderSearch);
   const filter = adminState.orderStatus;
 
   const orders = adminState.orders.filter((order) => {
-    const status = normalizeStatus(order.status);
+    const status = normalizeKanbanStatus(order.status);
     if (filter !== 'todos') {
-      if (filter === 'preparando') {
-        if (status !== 'preparando' && status !== 'en_preparacion') return false;
+      if (filter === 'activos') {
+        if (status === 'entregado' || status === 'cancelado') return false;
       } else if (status !== filter) {
         return false;
       }
@@ -581,6 +615,43 @@ function renderOrders() {
     ].join(' '));
     return haystack.includes(query);
   });
+
+  // 1. Renderizar Tablero Kanban
+  if (kanbanBoard) {
+    const visibleColumns = KANBAN_COLUMNS.filter((col) => {
+      if (filter === 'todos') return true;
+      if (filter === 'activos') return col.key !== 'entregado' && col.key !== 'cancelado';
+      return col.key === filter;
+    });
+
+    kanbanBoard.innerHTML = visibleColumns.map((col) => {
+      const colOrders = orders.filter((order) => normalizeKanbanStatus(order.status) === col.key);
+      const colTotal = colOrders.reduce((sum, order) => sum + getOrderTotal(order), 0);
+
+      const cardsHtml = colOrders.length
+        ? colOrders.map((order) => renderKanbanOrderCard(order, col)).join('')
+        : `<div class="kanban-empty">Sin pedidos en ${escapeHTML(col.label.toLowerCase())}</div>`;
+
+      return `
+        <section class="kanban-column status-col-${escapeAttr(col.key)}" data-kanban-column="${escapeAttr(col.key)}">
+          <header class="kanban-col-head">
+            <div class="kanban-col-title">
+              <span class="kanban-col-icon">${col.icon}</span>
+              <h3>${escapeHTML(col.label)}</h3>
+              <span class="kanban-col-count">${colOrders.length}</span>
+            </div>
+            <span class="kanban-col-sum">${formatPrice(colTotal)}</span>
+          </header>
+          <div class="kanban-col-body" data-kanban-dropzone="${escapeAttr(col.key)}">
+            ${cardsHtml}
+          </div>
+        </section>
+      `;
+    }).join('');
+  }
+
+  // 2. Renderizar Vista Tabla
+  if (!body) return;
 
   if (!orders.length) {
     body.innerHTML = '<tr><td colspan="7" class="empty-cell">No hay pedidos que coincidan con el filtro.</td></tr>';
@@ -612,6 +683,139 @@ function renderOrders() {
       </tr>
     `;
   }).join('');
+}
+
+function renderKanbanOrderCard(order, colConfig) {
+  const meta = getOrderMeta(order);
+  const currentKey = normalizeKanbanStatus(order.status);
+  const entregaBadge = meta.modalidad === 'delivery' ? '🛵 Delivery' : '🏪 Retiro';
+  const pagoBadge = meta.pago === 'efectivo' ? '💵 Efectivo' : meta.pago === 'transferencia' ? '🏦 Transf.' : 'Pago s/d';
+
+  const itemsSummary = meta.items.length
+    ? meta.items.slice(0, 4).map((item) => `<li><strong>${Number(item.qty || 1)}×</strong> ${escapeHTML(item.name || 'Producto')}</li>`).join('')
+    : '<li class="muted">Sin detalle de ítems</li>';
+  const extraItems = meta.items.length > 4
+    ? `<li class="more-items">+${meta.items.length - 4} ítem(s) más…</li>`
+    : '';
+
+  const statusOptions = KANBAN_COLUMNS.map((c) => `
+    <option value="${escapeAttr(c.key)}" ${c.key === currentKey ? 'selected' : ''}>${c.icon} ${escapeHTML(c.label)}</option>
+  `).join('');
+
+  return `
+    <article class="kanban-card" draggable="true" data-kanban-order-id="${escapeAttr(order.id)}">
+      <div class="kanban-card-top">
+        <button type="button" class="kanban-order-code mono" data-order-open="${escapeAttr(order.id)}">${escapeHTML(meta.codigo)}</button>
+        <span class="kanban-order-time">${formatOrderShortTime(order.created_at)}</span>
+      </div>
+
+      <div class="kanban-card-customer" data-order-open="${escapeAttr(order.id)}">
+        <strong>${escapeHTML(order.customer_name || 'Cliente sin nombre')}</strong>
+        <span>${escapeHTML(order.customer_phone || 'Sin teléfono')}</span>
+      </div>
+
+      <div class="kanban-card-badges">
+        <span class="k-pill">${entregaBadge}</span>
+        <span class="k-pill">${pagoBadge}</span>
+      </div>
+
+      ${meta.modalidad === 'delivery' && order.delivery_address
+        ? `<p class="kanban-card-address">📍 ${escapeHTML(order.delivery_address)}</p>`
+        : ''}
+
+      <ul class="kanban-card-items" data-order-open="${escapeAttr(order.id)}">
+        ${itemsSummary}
+        ${extraItems}
+      </ul>
+
+      ${order.comment || meta.notas
+        ? `<p class="kanban-card-note">📝 ${escapeHTML(meta.notas || order.comment)}</p>`
+        : ''}
+
+      <div class="kanban-card-foot">
+        <div class="kanban-card-total">
+          <span>Total</span>
+          <strong>${formatPrice(getOrderTotal(order))}</strong>
+        </div>
+        <div class="kanban-card-quick">
+          <a class="icon-btn btn-mini" href="${escapeAttr(customerWhatsApp(order.customer_phone, meta.codigo))}" target="_blank" rel="noopener" title="Enviar WhatsApp al cliente">💬</a>
+          <button type="button" class="btn btn-ghost btn-small" data-order-open="${escapeAttr(order.id)}">Detalle</button>
+          ${colConfig.next
+            ? `<button type="button" class="btn btn-primary btn-small" data-order-advance="${escapeAttr(order.id)}" data-next-status="${escapeAttr(colConfig.next)}">${escapeHTML(colConfig.nextLabel)}</button>`
+            : ''}
+        </div>
+      </div>
+
+      <div class="kanban-card-move-row">
+        <select class="kanban-status-select" data-inline-order-status="${escapeAttr(order.id)}" aria-label="Mover pedido de columna">
+          ${statusOptions}
+        </select>
+      </div>
+    </article>
+  `;
+}
+
+function formatOrderShortTime(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return new Intl.DateTimeFormat('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+}
+
+function handleKanbanDragStart(event) {
+  const card = event.target.closest('[data-kanban-order-id]');
+  if (!card) return;
+  adminState.draggedOrderId = card.dataset.kanbanOrderId;
+  card.classList.add('is-dragging');
+  if (event.dataTransfer) {
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData('text/plain', adminState.draggedOrderId);
+  }
+}
+
+function handleKanbanDragEnd(event) {
+  const card = event.target.closest('[data-kanban-order-id]');
+  if (card) card.classList.remove('is-dragging');
+  document.querySelectorAll('.kanban-column.is-drag-over').forEach((col) => col.classList.remove('is-drag-over'));
+  adminState.draggedOrderId = null;
+}
+
+function handleKanbanDragOver(event) {
+  const column = event.target.closest('[data-kanban-column]');
+  if (!column || !adminState.draggedOrderId) return;
+  event.preventDefault();
+  if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+  column.classList.add('is-drag-over');
+}
+
+function handleKanbanDragLeave(event) {
+  const column = event.target.closest('[data-kanban-column]');
+  if (!column) return;
+  if (!column.contains(event.relatedTarget)) {
+    column.classList.remove('is-drag-over');
+  }
+}
+
+function handleKanbanDrop(event) {
+  const column = event.target.closest('[data-kanban-column]');
+  if (!column) return;
+  event.preventDefault();
+  column.classList.remove('is-drag-over');
+
+  const orderId = adminState.draggedOrderId || event.dataTransfer?.getData('text/plain');
+  const nextStatus = column.dataset.kanbanColumn;
+  adminState.draggedOrderId = null;
+
+  if (!orderId || !nextStatus) return;
+  const order = adminState.orders.find((row) => String(row.id) === String(orderId));
+  if (!order || normalizeKanbanStatus(order.status) === nextStatus) return;
+
+  updateOrderStatus(orderId, nextStatus);
 }
 
 function openOrderModal(orderId) {
@@ -2439,7 +2643,22 @@ function handleAdminClick(event) {
     return;
   }
 
-  // Pedidos
+  // Pedidos (Kanban / Lista / Avanzar / Detalle)
+  const ordersModeBtn = event.target.closest('[data-orders-mode]');
+  if (ordersModeBtn) {
+    adminState.ordersMode = ordersModeBtn.dataset.ordersMode === 'table' ? 'table' : 'kanban';
+    renderOrders();
+    return;
+  }
+
+  const orderAdvanceBtn = event.target.closest('[data-order-advance]');
+  if (orderAdvanceBtn) {
+    const orderId = orderAdvanceBtn.dataset.orderAdvance;
+    const nextStatus = orderAdvanceBtn.dataset.nextStatus;
+    if (orderId && nextStatus) updateOrderStatus(orderId, nextStatus);
+    return;
+  }
+
   const orderRow = event.target.closest('[data-order-open]');
   if (orderRow) {
     openOrderModal(orderRow.dataset.orderOpen);
@@ -2542,6 +2761,13 @@ function handleAdminClick(event) {
 }
 
 function handleAdminChange(event) {
+  // Cambio directo de estado de pedido en tarjeta Kanban
+  const inlineOrderStatus = event.target.closest('[data-inline-order-status]');
+  if (inlineOrderStatus) {
+    updateOrderStatus(inlineOrderStatus.dataset.inlineOrderStatus, inlineOrderStatus.value);
+    return;
+  }
+
   // Cambio directo de categoría en tarjeta de producto o tabla de asignación
   const inlineCatSelect = event.target.closest('[data-inline-category-product]');
   if (inlineCatSelect) {

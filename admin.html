@@ -225,25 +225,35 @@
         </div>
       </section>
 
-      <!-- PEDIDOS -->
+      <!-- PEDIDOS (KANBAN + TABLA) -->
       <section class="view" id="view-pedidos">
-        <div class="toolbar">
+        <div class="toolbar toolbar-wrap">
           <label class="search">
             <span>🔍</span>
-            <input type="search" id="orderSearch" placeholder="Buscar por cliente, teléfono, código o dirección…">
+            <input type="search" id="orderSearch" placeholder="Buscar por cliente, teléfono, código, producto o dirección…">
           </label>
           <select id="orderStatusFilter" aria-label="Filtrar por estado">
             <option value="todos">Todos los estados</option>
-            <option value="pendiente">Pendientes</option>
-            <option value="confirmado">Confirmados</option>
-            <option value="preparando">En preparación</option>
-            <option value="listo">Listos</option>
-            <option value="enviado">Enviados</option>
-            <option value="entregado">Entregados</option>
-            <option value="cancelado">Cancelados</option>
+            <option value="activos">⚡ Solo en curso (sin entregados/cancelados)</option>
+            <option value="pendiente">⏳ Pendientes</option>
+            <option value="confirmado">✅ Confirmados</option>
+            <option value="preparando">🔥 En preparación</option>
+            <option value="listo">📦 Listos</option>
+            <option value="enviado">🛵 Enviados</option>
+            <option value="entregado">🎉 Entregados</option>
+            <option value="cancelado">❌ Cancelados</option>
           </select>
+          <div class="view-mode-switch" role="group" aria-label="Modo de visualización de pedidos">
+            <button type="button" class="btn btn-small is-active" data-orders-mode="kanban">🗂️ Kanban</button>
+            <button type="button" class="btn btn-small" data-orders-mode="table">📋 Lista</button>
+          </div>
         </div>
-        <div class="panel">
+
+        <!-- TABLERO KANBAN DE PEDIDOS -->
+        <div class="kanban-board" id="ordersKanbanBoard"></div>
+
+        <!-- VISTA TABLA SECUNDARIA -->
+        <div class="panel" id="ordersTablePanel" hidden>
           <div class="table-wrap">
             <table class="data-table orders-table">
               <thead>
