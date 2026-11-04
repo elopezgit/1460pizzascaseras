@@ -374,22 +374,39 @@ function renderCategories() {
 
 function renderBanners() {
   const container = document.getElementById('promoGrid');
+  const dotsContainer = document.getElementById('promoDots');
   if (!container) return;
+
+  if (state.bannerTimer) {
+    clearInterval(state.bannerTimer);
+    state.bannerTimer = null;
+  }
 
   const banners = [...state.banners].sort((a, b) => (a.sort || 0) - (b.sort || 0));
   if (!banners.length) {
     container.innerHTML = '';
+    if (dotsContainer) dotsContainer.innerHTML = '';
     return;
   }
 
-  container.innerHTML = banners.map((banner, index) => {
+  const count = banners.length;
+  const loopSets = count > 1 ? 3 : 1;
+  const loopedBanners = [];
+  for (let s = 0; s < loopSets; s += 1) {
+    banners.forEach((banner, idx) => {
+      loopedBanners.push({ banner, realIndex: idx, setIndex: s });
+    });
+  }
+
+  const badges = ['🔥 Destacado', '🎊 Eventos', '🍕 Clásicas'];
+
+  container.innerHTML = loopedBanners.map(({ banner, realIndex }, domIndex) => {
     const link = banner.link || '#menu';
     const external = /^https?:\/\//i.test(link);
     const attrs = external ? ' target="_blank" rel="noopener"' : '';
-    const badges = ['🔥 Destacado', '🎊 Eventos', '🍕 Clásicas'];
-    const kicker = badges[index % badges.length];
+    const kicker = badges[realIndex % badges.length];
     return `
-      <a class="promo-card" href="${escapeAttr(link)}"${attrs}
+      <a class="promo-card" data-banner-dom-index="${domIndex}" data-banner-real-index="${realIndex}" href="${escapeAttr(link)}"${attrs}
         style="background-image:url('${escapeAttr(banner.image || '')}')">
         <div class="promo-content">
           <span class="promo-kicker">${escapeHTML(kicker)}</span>
@@ -399,6 +416,118 @@ function renderBanners() {
       </a>
     `;
   }).join('');
+
+  if (dotsContainer) {
+    dotsContainer.innerHTML = count > 1
+      ? banners.map((_, idx) => `<button type="button" class="promo-dot ${idx === 0 ? 'is-active' : ''}" data-promo-dot="${idx}" aria-label="Ver banner ${idx + 1}"></button>`).join('')
+      : '';
+  }
+
+  if (count <= 1) return;
+
+  initInfiniteBannerCarousel(container, dotsContainer, count);
+}
+
+function initInfiniteBannerCarousel(container, dotsContainer, count) {
+  let currentDomIndex = count; // Arranca en el set central (índice N)
+  let isPaused = false;
+  let normalizeTimeout = null;
+  let scrollDebounce = null;
+
+  const getCards = () => Array.from(container.querySelectorAll('.promo-card'));
+
+  const getCardStepWidth = () => {
+    const cards = getCards();
+    if (cards.length < 2) return cards[0]?.offsetWidth || 280;
+    return cards[1].offsetLeft - cards[0].offsetLeft;
+  };
+
+  const updateDots = (realIdx) => {
+    if (!dotsContainer) return;
+    const normalized = ((realIdx % count) + count) % count;
+    dotsContainer.querySelectorAll('.promo-dot').forEach((dot, idx) => {
+      dot.classList.toggle('is-active', idx === normalized);
+    });
+  };
+
+  const jumpInstantTo = (domIndex) => {
+    const step = getCardStepWidth();
+    if (!step) return;
+    currentDomIndex = domIndex;
+    container.style.scrollBehavior = 'auto';
+    container.scrollLeft = domIndex * step;
+    container.style.scrollBehavior = '';
+    updateDots(domIndex % count);
+  };
+
+  const normalizeLoopPosition = () => {
+    const step = getCardStepWidth();
+    if (!step) return;
+    const approxIndex = Math.round(container.scrollLeft / step);
+    currentDomIndex = approxIndex;
+    updateDots(currentDomIndex % count);
+
+    if (currentDomIndex >= count * 2 || currentDomIndex < count) {
+      const wrappedReal = ((currentDomIndex % count) + count) % count;
+      jumpInstantTo(count + wrappedReal);
+    }
+  };
+
+  const stepNextBanner = () => {
+    if (isPaused || document.hidden) return;
+    const step = getCardStepWidth();
+    if (!step) return;
+
+    currentDomIndex += 1;
+    container.scrollTo({
+      left: currentDomIndex * step,
+      behavior: 'smooth'
+    });
+    updateDots(currentDomIndex % count);
+
+    clearTimeout(normalizeTimeout);
+    normalizeTimeout = setTimeout(normalizeLoopPosition, 520);
+  };
+
+  // Posicionar inicialmente en el bloque del medio sin animación
+  requestAnimationFrame(() => {
+    jumpInstantTo(count);
+  });
+
+  if (!container.dataset.carouselBound) {
+    container.dataset.carouselBound = '1';
+
+    container.addEventListener('pointerenter', () => { isPaused = true; });
+    container.addEventListener('pointerleave', () => { isPaused = false; });
+    container.addEventListener('touchstart', () => { isPaused = true; }, { passive: true });
+    container.addEventListener('touchend', () => {
+      setTimeout(() => { isPaused = false; }, 1200);
+    }, { passive: true });
+
+    container.addEventListener('scroll', () => {
+      clearTimeout(scrollDebounce);
+      scrollDebounce = setTimeout(() => {
+        if (!isPaused) return;
+        normalizeLoopPosition();
+      }, 150);
+    }, { passive: true });
+
+    dotsContainer?.addEventListener('click', (event) => {
+      const dot = event.target.closest('[data-promo-dot]');
+      if (!dot) return;
+      const targetReal = Number(dot.dataset.promoDot || 0);
+      const step = getCardStepWidth();
+      if (!step) return;
+      currentDomIndex = count + targetReal;
+      container.scrollTo({
+        left: currentDomIndex * step,
+        behavior: 'smooth'
+      });
+      updateDots(targetReal);
+    });
+  }
+
+  state.bannerTimer = setInterval(stepNextBanner, 3500);
 }
 
 function renderPickupPoints() {
