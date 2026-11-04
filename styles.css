@@ -616,25 +616,30 @@ h3 {
 
 .store-cover {
   position: relative;
-  height: 156px;
+  display: grid;
+  place-items: center;
+  height: 150px;
+  padding: 14px;
   border-radius: 18px 18px 0 0;
-  background-color: #1f1f26;
-  background-position: center;
-  background-size: cover;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(229, 25, 55, 0.25), transparent 65%),
+    #0a0a0d;
   overflow: hidden;
 }
 
-.store-cover-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(12, 12, 16, 0.1) 0%, rgba(12, 12, 16, 0.42) 100%);
+.store-cover-logo {
+  height: 112px;
+  width: auto;
+  max-width: 85%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.45));
 }
 
 .store-header-card {
   position: relative;
   z-index: 2;
-  margin-top: -16px;
-  padding: 14px 20px;
+  margin-top: -12px;
+  padding: 16px 20px;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
@@ -644,20 +649,8 @@ h3 {
 .store-header-main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
-}
-
-.store-avatar {
-  width: 62px;
-  height: 62px;
-  margin-top: -28px;
-  flex-shrink: 0;
-  border-radius: 16px;
-  object-fit: contain;
-  background: #08080a;
-  padding: 5px;
-  border: 3px solid var(--surface);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .store-title-block {
@@ -2738,22 +2731,15 @@ h3 {
   }
 
   .store-cover {
-    height: 130px;
+    height: 124px;
+  }
+
+  .store-cover-logo {
+    height: 92px;
   }
 
   .store-header-card {
-    padding: 12px 14px;
-  }
-
-  .store-header-main {
-    align-items: center;
-    gap: 12px;
-  }
-
-  .store-avatar {
-    width: 54px;
-    height: 54px;
-    margin-top: -22px;
+    padding: 14px 16px;
   }
 
   .store-info-btn {
