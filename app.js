@@ -140,9 +140,6 @@ function bindEvents() {
   });
 
   document.getElementById('checkoutForm')?.addEventListener('submit', submitOrder);
-  document.getElementById('waFallbackBtn')?.addEventListener('click', (event) => {
-    event.currentTarget.href = buildCartWhatsAppLink();
-  });
 
   document.getElementById('productModalClose')?.addEventListener('click', closeProductModal);
   document.getElementById('productModalOverlay')?.addEventListener('click', (event) => {
@@ -894,9 +891,6 @@ function renderCart() {
 
   updatePaymentInfo(totals.descuento);
 
-  const waFallback = document.getElementById('waFallbackBtn');
-  if (waFallback) waFallback.href = buildCartWhatsAppLink();
-
   const checkoutButton = document.getElementById('checkoutBtn');
   if (checkoutButton) checkoutButton.disabled = entries.length === 0;
 }
@@ -1092,6 +1086,7 @@ async function submitOrder(event) {
     createdAt: new Date().toISOString()
   };
 
+  const waUrl = buildWhatsAppMessage(order);
   const button = document.getElementById('checkoutBtn');
   setButtonLoading(button, true);
 
@@ -1133,11 +1128,15 @@ async function submitOrder(event) {
     clearCart();
     closeCart();
     showSuccessModal(state.lastOrder, true);
+    window.location.href = waUrl;
   } catch (error) {
     console.error('Error al guardar el pedido:', error);
     state.lastOrder = { ...order, saved: false };
+    persistLastOrder();
+    clearCart();
+    closeCart();
     showSuccessModal(state.lastOrder, false);
-    showToast('Podés enviar tu pedido directamente por WhatsApp.', 'error');
+    window.location.href = waUrl;
   } finally {
     setButtonLoading(button, false);
   }
@@ -1530,10 +1529,10 @@ function setButtonLoading(button, loading) {
   if (!button) return;
   if (loading) {
     button.dataset.originalText = button.textContent;
-    button.textContent = 'Procesando…';
+    button.textContent = 'Guardando y abriendo WhatsApp…';
     button.disabled = true;
   } else {
-    button.textContent = button.dataset.originalText || 'Confirmar pedido';
+    button.textContent = button.dataset.originalText || '💬 Enviar pedido por WhatsApp';
     button.disabled = false;
   }
 }
