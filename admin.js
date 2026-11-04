@@ -3067,3 +3067,35 @@ function applyAdminTheme(theme) {
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = theme === 'dark' ? '#08080a' : '#fffaf2';
 }
+
+
+/* ─── OCULTAR BADGE INYECTADO DE NETLIFY ─────────────────────────────────── */
+(function suppressNetlifyBadge() {
+  function cleanNetlifyNodes() {
+    document.querySelectorAll('#netlify-badge, [id*="netlify"], [class*="netlify"], netlify-badge').forEach((el) => {
+      if (el.id !== 'adminApp') el.remove();
+    });
+    Array.from(document.body?.children || []).forEach((node) => {
+      if (!node || !node.tagName) return;
+      const text = (node.textContent || '').trim();
+      const shadowText = (node.shadowRoot?.textContent || '').trim();
+      if (
+        text.includes('Powered by Netlify') ||
+        text.includes('Build your own site with Netlify') ||
+        shadowText.includes('Powered by Netlify') ||
+        shadowText.includes('Build your own site with Netlify')
+      ) {
+        node.remove();
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cleanNetlifyNodes);
+  } else {
+    cleanNetlifyNodes();
+  }
+
+  const observer = new MutationObserver(() => cleanNetlifyNodes());
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+})();
