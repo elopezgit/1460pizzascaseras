@@ -4,7 +4,7 @@ const SUPABASE_KEY = 'sb_publishable_VuzjOCnvBEuufNsyrK8gCw_GCFPwBqL';
 const EMPRESA_ID = '3a9972e1-d620-4074-9922-0e06cae36f68';
 
 const BRAND = {
-  name: '14-60 Pizzas Caseras',
+  name: '14-60 Pizzas Caseras LPH',
   shortName: '14-60',
   claim: 'Pizzas LPH · Listas para hornear',
   description: 'Pizzas caseras listas para hornear. Delivery y retiro en San Miguel de Tucumán.',

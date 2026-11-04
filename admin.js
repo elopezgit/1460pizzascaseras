@@ -1120,7 +1120,7 @@ function customerWhatsApp(phone, code = '') {
   if (!digits) return '#';
   if (digits.startsWith('0')) digits = digits.slice(1);
   if (!digits.startsWith('54')) digits = `549${digits}`;
-  const text = code ? `Hola, te escribo por el pedido ${code} de 14-60 Pizzas Caseras.` : 'Hola, te escribo de 14-60 Pizzas Caseras.';
+  const text = code ? `Hola, te escribo por el pedido ${code} de 14-60 Pizzas Caseras LPH.` : 'Hola, te escribo de 14-60 Pizzas Caseras LPH.';
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`;
 }
 

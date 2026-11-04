@@ -1283,7 +1283,7 @@ function closeSuccessModal() {
 function buildWhatsAppMessage(order) {
   const lines = [];
   lines.push(`🍕 *PEDIDO ${order.codigo}*`);
-  lines.push('*14-60 Pizzas Caseras*');
+  lines.push('*14-60 Pizzas Caseras LPH*');
   lines.push('');
   lines.push(`👤 *Cliente:* ${order.nombre}`);
   lines.push(`📞 *Teléfono:* ${order.telefono}`);
