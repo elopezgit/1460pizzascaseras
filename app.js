@@ -352,17 +352,14 @@ function renderCategories() {
 
   const categories = [...state.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
   const total = state.menu.length;
-  const hotCount = state.menu.filter((item) => item.hot).length;
+
+  if (state.currentCat !== 'todos' && !categories.some((cat) => cat.slug === state.currentCat)) {
+    state.currentCat = 'todos';
+  }
 
   const buttons = [
     `<button type="button" class="filter-chip ${state.currentCat === 'todos' ? 'active' : ''}" data-cat="todos">🍽️ Todo <em>${total}</em></button>`
   ];
-
-  if (hotCount > 0) {
-    buttons.push(
-      `<button type="button" class="filter-chip ${state.currentCat === 'populares' ? 'active' : ''}" data-cat="populares">🔥 Más pedidas <em>${hotCount}</em></button>`
-    );
-  }
 
   categories.forEach((cat) => {
     const count = state.menu.filter((item) => item.cat === cat.slug).length;
@@ -454,7 +451,6 @@ function renderMenu() {
   const filtered = state.menu
     .filter((item) => {
       if (state.currentCat === 'todos') return true;
-      if (state.currentCat === 'populares') return Boolean(item.hot);
       return item.cat === state.currentCat;
     })
     .filter((item) => {
@@ -477,21 +473,6 @@ function renderMenu() {
   if (state.currentCat === 'todos' && !query) {
     const categories = [...state.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
     const sectionsHTML = [];
-
-    const hotItems = filtered.filter((item) => item.hot);
-    if (hotItems.length > 0) {
-      sectionsHTML.push(`
-        <div class="menu-category-group">
-          <div class="menu-group-header">
-            <h3>🔥 Más pedidas</h3>
-            <span>Favoritas</span>
-          </div>
-          <div class="menu-cards-grid">
-            ${hotItems.map(productCardHTML).join('')}
-          </div>
-        </div>
-      `);
-    }
 
     categories.forEach((cat) => {
       const catItems = filtered.filter((item) => item.cat === cat.slug);
@@ -531,9 +512,7 @@ function renderMenu() {
 
   const title = query
     ? `🔎 Resultados para "${escapeHTML(state.search)}"`
-    : state.currentCat === 'populares'
-      ? '🔥 Más pedidas'
-      : `${categoryIcon(state.currentCat)} ${categoryName(state.currentCat)}`;
+    : `${categoryIcon(state.currentCat)} ${categoryName(state.currentCat)}`;
 
   grid.innerHTML = `
     <div class="menu-category-group">
