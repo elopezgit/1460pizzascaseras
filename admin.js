@@ -679,7 +679,10 @@ function renderOrders() {
         <td>${pago}</td>
         <td><strong>${formatPrice(getOrderTotal(order))}</strong></td>
         <td>${statusBadge(order.status)}</td>
-        <td><button type="button" class="btn btn-ghost btn-small" data-order-open="${escapeAttr(order.id)}">Ver</button></td>
+        <td>
+          <button type="button" class="btn btn-ghost btn-small" data-order-open="${escapeAttr(order.id)}">Ver</button>
+          <button type="button" class="btn btn-danger btn-small" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido de la base">🗑️</button>
+        </td>
       </tr>
     `;
   }).join('');
@@ -750,6 +753,7 @@ function renderKanbanOrderCard(order, colConfig) {
         <select class="kanban-status-select" data-inline-order-status="${escapeAttr(order.id)}" aria-label="Mover pedido de columna">
           ${statusOptions}
         </select>
+        <button type="button" class="btn btn-danger btn-small" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido de la base">🗑️</button>
       </div>
     </article>
   `;
@@ -884,6 +888,7 @@ function openOrderModal(orderId) {
 
     <div class="modal-actions">
       <a class="btn btn-ghost" href="${escapeAttr(customerWhatsApp(order.customer_phone, meta.codigo))}" target="_blank" rel="noopener">💬 WhatsApp al cliente</a>
+      <button type="button" class="btn btn-danger" data-order-delete="${escapeAttr(order.id)}">🗑️ Eliminar pedido</button>
       <button type="button" class="btn btn-ghost" data-close-modal>Cerrar</button>
     </div>
   `;
@@ -919,6 +924,38 @@ async function updateOrderStatus(orderId, status) {
     console.error('Error al actualizar el estado:', error);
     showToast(`No se pudo actualizar el estado: ${error.message}`, 'error');
   }
+}
+
+async function deleteOrder(orderId) {
+  const client = getClient();
+  const order = adminState.orders.find((row) => String(row.id) === String(orderId));
+  if (!order) return;
+
+  const meta = getOrderMeta(order);
+  const label = meta.codigo || order.id;
+  if (!window.confirm(`¿Eliminar el pedido ${label} de la base de datos? Esta acción no se puede deshacer.`)) return;
+
+  if (client) {
+    try {
+      const { error } = await client
+        .from('orders')
+        .delete()
+        .eq('id', orderId)
+        .eq('empresa_id', EMPRESA_ID);
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error al eliminar el pedido:', error);
+      showToast(`No se pudo eliminar el pedido: ${error.message}`, 'error');
+      return;
+    }
+  }
+
+  adminState.orders = adminState.orders.filter((row) => String(row.id) !== String(orderId));
+  saveAdminCache();
+  closeModal();
+  renderAll();
+  showToast('Pedido eliminado.');
 }
 
 /* ─── 1. CRUD DE PRODUCTOS ───────────────────────────────────────────────── */
@@ -2656,6 +2693,12 @@ function handleAdminClick(event) {
     const orderId = orderAdvanceBtn.dataset.orderAdvance;
     const nextStatus = orderAdvanceBtn.dataset.nextStatus;
     if (orderId && nextStatus) updateOrderStatus(orderId, nextStatus);
+    return;
+  }
+
+  const orderDeleteBtn = event.target.closest('[data-order-delete]');
+  if (orderDeleteBtn) {
+    deleteOrder(orderDeleteBtn.dataset.orderDelete);
     return;
   }
 

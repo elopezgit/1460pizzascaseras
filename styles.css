@@ -267,19 +267,21 @@ h3 {
   to { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 
-/* ─── TOPBAR DE LA WEBAPP (MOBILE FIRST) ─────────────────────────────────── */
+/* ─── TOPBAR INTEGRADA CON EL HERO (ESTILO APP DE DELIVERY) ──────────────── */
 .app-topbar {
   position: sticky;
   top: 0;
   z-index: 120;
-  border-bottom: 1px solid var(--line);
-  background: var(--header-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: #e51937;
+  color: #ffffff;
+  transition: background 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
 .app-topbar.is-scrolled {
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  background: rgba(214, 15, 45, 0.96);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px rgba(130, 8, 28, 0.28);
 }
 
 .topbar-inner {
@@ -290,32 +292,51 @@ h3 {
   min-height: var(--header-h);
 }
 
-.brand {
+.location-selector-btn {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   min-width: 0;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  text-align: left;
+  cursor: pointer;
 }
 
 .brand-logo {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
+  border-radius: 11px;
   object-fit: contain;
-  background: #0a0a0c;
+  background: #0d0a0c;
   padding: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   flex-shrink: 0;
 }
 
-.brand-copy {
+.location-copy {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  min-width: 0;
+  line-height: 1.15;
 }
 
-.brand-copy strong {
-  font-size: 0.96rem;
+.location-address {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #ffffff;
+}
+
+.location-address strong {
+  font-size: 0.98rem;
   font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-status {
@@ -323,84 +344,62 @@ h3 {
   align-items: center;
   gap: 5px;
   margin-top: 2px;
-  color: var(--muted);
-  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.7rem;
   font-weight: 700;
 }
 
 .status-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--muted);
+  background: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
 }
 
-.header-status.is-open {
-  color: var(--green);
-}
-
-.header-status.is-open .status-dot {
-  background: var(--green);
+.status-dot-sep {
+  opacity: 0.7;
 }
 
 .header-status.is-closed .status-dot {
-  background: var(--red);
+  background: var(--gold-bright);
+  box-shadow: none;
 }
 
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.pill-action-btn {
-  display: none;
-  align-items: center;
-  gap: 5px;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text-soft);
-  font-size: 0.76rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.pill-action-btn:hover {
-  border-color: var(--red);
-  color: var(--red);
+  gap: 8px;
 }
 
 .icon-btn {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   padding: 0;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 50%;
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 0.92rem;
   cursor: pointer;
 }
 
 .cart-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 36px;
-  padding: 0 8px 0 11px;
-  border: 0;
+  height: 38px;
+  padding: 0 9px 0 12px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
   border-radius: 999px;
-  background: var(--red);
+  background: rgba(18, 8, 12, 0.34);
   color: #fff;
   font-weight: 800;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(229, 25, 55, 0.24);
 }
 
 .cart-btn-label {
@@ -412,101 +411,332 @@ h3 {
   place-items: center;
   min-width: 22px;
   height: 22px;
-  padding: 0 5px;
+  padding: 0 6px;
   border-radius: 999px;
-  background: #fff;
+  background: #ffffff;
   color: var(--red);
   font-size: 0.72rem;
   font-weight: 800;
 }
 
-/* ─── CABECERA DEL LOCAL CON LOGO CENTRADO ───────────────────────────────── */
-.store-hero {
-  padding: 10px 0 4px;
-}
-
-.store-cover {
-  display: grid;
-  place-items: center;
-  height: 112px;
-  padding: 10px;
-  border-radius: 16px 16px 0 0;
+/* ─── HERO PRINCIPAL ESTILO PEDIDOSYA CON GAMA 14-60 ─────────────────────── */
+.py-hero-shell {
+  position: relative;
+  padding: 6px 0 22px;
+  border-radius: 0 0 28px 28px;
   background:
-    radial-gradient(circle at 50% 45%, rgba(229, 25, 55, 0.28), transparent 65%),
-    #0a0a0d;
+    radial-gradient(circle at 86% 42%, rgba(252, 175, 21, 0.24), transparent 46%),
+    linear-gradient(180deg, #e51937 0%, #c80e2b 38%, #7c0d29 76%, #3f0e26 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 30px rgba(110, 10, 30, 0.18);
   overflow: hidden;
 }
 
-.store-cover-logo {
-  height: 86px;
-  width: auto;
-  max-width: 82%;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+/* Buscador píldora blanco con botón circular rojo */
+.py-search-pill-wrap {
+  margin-bottom: 14px;
 }
 
-.store-header-card {
-  position: relative;
-  z-index: 2;
-  margin-top: -10px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+.py-search-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: 48px;
+  padding: 5px 5px 5px 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(20, 4, 10, 0.16);
 }
 
-.store-header-main {
+.py-search-pill input {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #18181b;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.py-search-pill input::placeholder {
+  color: #71717a;
+}
+
+.py-search-submit {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--red);
+  color: #ffffff;
+}
+
+/* Fila Kicker + Píldora Blanca */
+.py-hero-kicker-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  margin-bottom: 14px;
 }
 
-.store-title-block {
-  min-width: 0;
-  flex: 1;
-}
-
-.store-title-block h1 {
-  margin: 0 0 3px;
-  font-size: 1.15rem;
+.py-hero-kicker-title {
+  font-size: 1rem;
   font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #ffffff;
 }
 
-.store-meta-inline {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 6px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.meta-sep {
-  color: var(--line-strong);
-}
-
-.meta-item strong {
-  color: var(--text);
-}
-
-.meta-cash {
-  color: var(--green);
-  font-weight: 800;
-}
-
-.store-info-btn {
+.py-hero-white-pill {
   flex-shrink: 0;
-  padding: 6px 10px;
-  border: 1px solid var(--line-strong);
+  padding: 5px 12px;
+  border: 0;
   border-radius: 999px;
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 0.72rem;
-  font-weight: 700;
+  background: #ffffff;
+  color: #18181b;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
   cursor: pointer;
+}
+
+/* Bloque central: Tipografía de alto impacto + Imagen destacada */
+.py-hero-split {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.py-hero-eyebrow {
+  margin: 0 0 2px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.py-hero-headline {
+  margin: 0 0 6px;
+  font-size: clamp(2.35rem, 9vw, 3.3rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.py-hero-sub {
+  margin: 0;
+  max-width: 240px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.32;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.py-hero-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.py-hero-pizza-img {
+  width: 138px;
+  height: 138px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+}
+
+.py-hero-floating-logo {
+  position: absolute;
+  right: 2px;
+  bottom: -4px;
+  width: 54px;
+  height: 54px;
+  padding: 4px;
+  border-radius: 14px;
+  background: #0d0a0c;
+  border: 2px solid var(--gold-bright);
+  object-fit: contain;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* Fila de tarjetas traslúcidas con insignia en la base del hero */
+.py-hero-glass-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(76px, 1fr));
+  gap: 9px;
+  padding-top: 12px;
+}
+
+.py-glass-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 82px;
+  padding: 32px 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), background 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.py-glass-card:hover,
+.py-glass-card.is-active {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.26);
+  border-color: var(--gold-bright);
+}
+
+.py-star-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ff2a4b, #b80721);
+  border: 2px solid var(--gold-bright);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.28);
+  line-height: 0.92;
+  color: #ffffff;
+}
+
+.py-star-badge small {
+  font-size: 0.42rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  opacity: 0.92;
+}
+
+.py-star-badge strong {
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.py-star-badge em {
+  font-style: normal;
+  font-size: 0.48rem;
+  font-weight: 800;
+  color: var(--gold-bright);
+}
+
+.py-glass-label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  color: #ffffff;
+}
+
+/* ─── TARJETAS VISUALES BENTO DE CATEGORÍAS (DEBAJO DEL HERO) ────────────── */
+.py-bento-section {
+  padding: 16px 0 8px;
+}
+
+.py-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 11px;
+}
+
+.py-bento-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 0.18s var(--ease), border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
+}
+
+.py-bento-card:hover,
+.py-bento-card.is-active {
+  transform: translateY(-2px);
+  border-color: var(--red);
+  box-shadow: var(--shadow-md);
+}
+
+.py-bento-pill {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+
+.py-bento-pill em {
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--red);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.py-bento-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 82px;
+  margin-bottom: 8px;
+}
+
+.py-bento-card.is-compact .py-bento-media {
+  height: 66px;
+}
+
+.py-bento-media img {
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.14);
+}
+
+.py-bento-card.is-compact .py-bento-media img {
+  width: 66px;
+  height: 66px;
+}
+
+.py-bento-title {
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--text);
 }
 
 /* ─── CARRUSEL DE BANNERS PROMOCIONALES (PASO INFINITO) ─────────────────── */
@@ -1916,25 +2146,37 @@ h3 {
     width: min(1180px, calc(100% - 40px));
   }
 
-  .pill-action-btn,
   .cart-btn-label {
     display: inline-flex;
   }
 
-  .store-cover {
-    height: 144px;
+  .py-hero-shell {
+    padding: 12px 0 28px;
+    border-radius: 0 0 36px 36px;
   }
 
-  .store-cover-logo {
-    height: 108px;
+  .py-hero-pizza-img {
+    width: 176px;
+    height: 176px;
   }
 
-  .store-header-card {
-    padding: 16px 20px;
+  .py-hero-sub {
+    max-width: 380px;
+    font-size: 0.92rem;
   }
 
-  .store-title-block h1 {
-    font-size: 1.4rem;
+  .py-bento-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .py-bento-card.is-compact .py-bento-media {
+    height: 82px;
+  }
+
+  .py-bento-card.is-compact .py-bento-media img {
+    width: 82px;
+    height: 82px;
   }
 
   .promo-grid {

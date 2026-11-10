@@ -2347,11 +2347,15 @@ input[type="checkbox"] {
 }
 
 .kanban-card-move-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding-top: 2px;
 }
 
 .kanban-status-select {
-  width: 100%;
+  flex: 1 1 auto;
+  width: auto;
   padding: 6px 9px;
   border-radius: 8px;
   border: 1px solid var(--line);

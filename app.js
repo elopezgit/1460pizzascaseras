@@ -88,13 +88,20 @@ function bindEvents() {
     renderMenu();
   });
 
-  document.getElementById('categoryFilters')?.addEventListener('click', (event) => {
+  const handleCategoryClick = (event, shouldScroll = false) => {
     const button = event.target.closest('[data-cat]');
     if (!button) return;
     state.currentCat = button.dataset.cat;
     renderCategories();
     renderMenu();
-  });
+    if (shouldScroll) {
+      document.getElementById('catalogStickyBar')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  document.getElementById('categoryFilters')?.addEventListener('click', (e) => handleCategoryClick(e, false));
+  document.getElementById('heroQuickCategories')?.addEventListener('click', (e) => handleCategoryClick(e, true));
+  document.getElementById('bentoCategoriesGrid')?.addEventListener('click', (e) => handleCategoryClick(e, true));
 
   document.getElementById('clearFiltersBtn')?.addEventListener('click', () => {
     state.currentCat = 'todos';
@@ -348,7 +355,8 @@ function renderStoreStatus() {
 
 function renderCategories() {
   const container = document.getElementById('categoryFilters');
-  if (!container) return;
+  const heroQuick = document.getElementById('heroQuickCategories');
+  const bentoGrid = document.getElementById('bentoCategoriesGrid');
 
   const categories = [...state.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
   const total = state.menu.length;
@@ -357,19 +365,73 @@ function renderCategories() {
     state.currentCat = 'todos';
   }
 
-  const buttons = [
-    `<button type="button" class="filter-chip ${state.currentCat === 'todos' ? 'active' : ''}" data-cat="todos">🍽️ Todo <em>${total}</em></button>`
-  ];
+  const activeCategories = categories.filter((cat) => state.menu.some((item) => item.cat === cat.slug));
 
-  categories.forEach((cat) => {
-    const count = state.menu.filter((item) => item.cat === cat.slug).length;
-    if (count === 0) return;
-    buttons.push(
-      `<button type="button" class="filter-chip ${state.currentCat === cat.slug ? 'active' : ''}" data-cat="${escapeAttr(cat.slug)}">${escapeHTML(cat.icon || '🍕')} ${escapeHTML(cat.name)} <em>${count}</em></button>`
-    );
-  });
+  if (container) {
+    const buttons = [
+      `<button type="button" class="filter-chip ${state.currentCat === 'todos' ? 'active' : ''}" data-cat="todos">🍽️ Todo <em>${total}</em></button>`
+    ];
 
-  container.innerHTML = buttons.join('');
+    activeCategories.forEach((cat) => {
+      const count = state.menu.filter((item) => item.cat === cat.slug).length;
+      buttons.push(
+        `<button type="button" class="filter-chip ${state.currentCat === cat.slug ? 'active' : ''}" data-cat="${escapeAttr(cat.slug)}">${escapeHTML(cat.icon || '🍕')} ${escapeHTML(cat.name)} <em>${count}</em></button>`
+      );
+    });
+
+    container.innerHTML = buttons.join('');
+  }
+
+  // Tarjetas traslúcidas con insignia en la base del hero (estilo PedidosYa)
+  if (heroQuick) {
+    const badgeLabels = [
+      { top: 'EFECTIVO', main: '10%', sub: 'OFF' },
+      { top: 'HORNO', main: '12m', sub: 'LPH' },
+      { top: 'CASERAS', main: '10%', sub: 'OFF' },
+      { top: 'COMBOS', main: 'PACK', sub: 'LPH' }
+    ];
+
+    heroQuick.innerHTML = activeCategories.map((cat, idx) => {
+      const badge = badgeLabels[idx % badgeLabels.length];
+      const isSelected = state.currentCat === cat.slug;
+      return `
+        <button type="button" class="py-glass-card ${isSelected ? 'is-active' : ''}" data-cat="${escapeAttr(cat.slug)}">
+          <span class="py-star-badge" aria-hidden="true">
+            <small>${badge.top}</small>
+            <strong>${badge.main}</strong>
+            <em>${badge.sub}</em>
+          </span>
+          <span class="py-glass-label">${escapeHTML(cat.name)}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  // Tarjetas visuales Bento debajo del hero (estilo PedidosYa Market / Restaurantes)
+  if (bentoGrid) {
+    const fallbackImages = {
+      clasicas: 'img/productos/muzzarella.webp',
+      especiales: 'img/productos/4-quesos.webp',
+      fugazzas: 'img/productos/fugazzetta-caramelizada.webp',
+      promos: 'img/productos/combo-muzzarella.webp'
+    };
+
+    bentoGrid.innerHTML = activeCategories.map((cat, idx) => {
+      const firstProduct = state.menu.find((item) => item.cat === cat.slug && item.image);
+      const imgSrc = firstProduct?.image || fallbackImages[cat.slug] || 'img/productos/extra-muzza.webp';
+      const isFeatured = idx < 2; // Las 2 primeras más grandes arriba, el resto debajo
+      const isSelected = state.currentCat === cat.slug;
+      return `
+        <button type="button" class="py-bento-card ${isFeatured ? 'is-large' : 'is-compact'} ${isSelected ? 'is-active' : ''}" data-cat="${escapeAttr(cat.slug)}">
+          ${idx === 0 ? '<span class="py-bento-pill"><strong>14-60</strong> <em>LPH</em></span>' : ''}
+          <div class="py-bento-media">
+            <img src="${escapeAttr(imgSrc)}" alt="${escapeAttr(cat.name)}" loading="lazy" onerror="this.src='img/productos/muzzarella.webp'">
+          </div>
+          <span class="py-bento-title">${escapeHTML(cat.name)}</span>
+        </button>
+      `;
+    }).join('');
+  }
 }
 
 function renderBanners() {

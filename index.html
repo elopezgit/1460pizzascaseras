@@ -35,30 +35,31 @@
   </div>
 
   <div id="app">
-    <!-- BARRA SUPERIOR DE LA WEBAPP -->
+    <!-- BARRA SUPERIOR INTEGRADA ESTILO APP -->
     <header class="app-topbar" id="siteHeader">
       <div class="container topbar-inner">
-        <a class="brand" href="#inicio" aria-label="14-60 Pizzas Caseras LPH">
+        <button class="location-selector-btn" id="openInfoModalBtn" type="button" aria-label="Ver locales y puntos de retiro">
           <img src="img/logo/1460-logo.webp" alt="Logo 14-60" class="brand-logo">
-          <div class="brand-copy">
-            <strong>14-60 Pizzas LPH</strong>
+          <div class="location-copy">
+            <span class="location-address">
+              <strong>Luis Patrón Costa 1460</strong>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
             <span class="header-status" id="storeStatus" aria-live="polite">
               <span class="status-dot"></span>
               <span id="storeStatusText">Abierto</span>
+              <span class="status-dot-sep">·</span>
+              <span>Delivery y retiro</span>
             </span>
           </div>
-        </a>
+        </button>
 
         <div class="topbar-actions">
-          <button class="pill-action-btn" id="openInfoModalBtn" type="button" aria-label="Ver locales y horarios">
-            <span aria-hidden="true">📍</span>
-            <span>Locales y horarios</span>
-          </button>
           <button class="icon-btn" id="themeToggleBtn" type="button" aria-label="Cambiar tema">
             <span aria-hidden="true">🌙</span>
           </button>
           <button class="cart-btn" id="cartOpenBtn" type="button" aria-label="Abrir mi pedido">
-            <span aria-hidden="true">🛍️</span>
+            <span aria-hidden="true">🛒</span>
             <span class="cart-btn-label">Pedido</span>
             <span class="cart-count" id="cartCount">0</span>
           </button>
@@ -67,28 +68,49 @@
     </header>
 
     <main class="webapp-main" id="inicio">
-      <!-- CABECERA DEL LOCAL CON LOGO Y DATOS CLAVE -->
-      <section class="store-hero">
+      <!-- HERO PRINCIPAL ESTILO APP DE DELIVERY CON GAMA 14-60 -->
+      <section class="py-hero-shell">
         <div class="container">
-          <div class="store-cover">
-            <img src="img/logo/1460-logo.webp" alt="14-60 Pizzas Caseras LPH" class="store-cover-logo">
+          <!-- Buscador píldora blanco con botón circular rojo -->
+          <div class="py-search-pill-wrap">
+            <label class="py-search-pill" for="menuSearch">
+              <input type="search" id="menuSearch" placeholder="Locales, pizzas, combos e ingredientes…" autocomplete="off">
+              <span class="py-search-submit" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              </span>
+            </label>
           </div>
 
-          <div class="store-header-card">
-            <div class="store-header-main">
-              <div class="store-title-block">
-                <h1>14-60 Pizzas Caseras LPH</h1>
-                <div class="store-meta-inline">
-                  <span class="meta-item">⭐ <strong>4.9</strong></span>
-                  <span class="meta-sep" aria-hidden="true">·</span>
-                  <span class="meta-item">🛵 Delivery y retiro</span>
-                  <span class="meta-sep" aria-hidden="true">·</span>
-                  <span class="meta-item meta-cash">💵 10% OFF en efectivo ($9.000)</span>
-                </div>
-              </div>
-              <button type="button" class="store-info-btn" id="storeInfoCardBtn">📍 Info y retiro</button>
+          <!-- Fila de título + píldora blanca informativa -->
+          <div class="py-hero-kicker-row">
+            <span class="py-hero-kicker-title">14-60 Pizzas Caseras LPH</span>
+            <button type="button" class="py-hero-white-pill" id="storeInfoCardBtn">
+              ⚡ Listas en 12 a 15 min
+            </button>
+          </div>
+
+          <!-- Bloque central: Tipografía de alto impacto + Imagen destacada -->
+          <div class="py-hero-split">
+            <div class="py-hero-copy">
+              <p class="py-hero-eyebrow">Pagando en efectivo</p>
+              <h1 class="py-hero-headline">10% OFF</h1>
+              <p class="py-hero-sub">Pedí tus pizzas caseras listas para hornear. Del freezer al horno en minutos.</p>
+            </div>
+            <div class="py-hero-visual">
+              <img src="img/productos/extra-muzza.webp" alt="Pizza 14-60 Lista para hornear" class="py-hero-pizza-img">
+              <img src="img/logo/1460-logo.webp" alt="14-60" class="py-hero-floating-logo">
             </div>
           </div>
+
+          <!-- Tarjetas traslúcidas con insignia en la base del hero -->
+          <div class="py-hero-glass-row" id="heroQuickCategories" aria-label="Accesos rápidos por categoría"></div>
+        </div>
+      </section>
+
+      <!-- TARJETAS VISUALES DE CATEGORÍAS PRINCIPALES (ESTILO BENTO) -->
+      <section class="py-bento-section" aria-label="Categorías destacadas">
+        <div class="container">
+          <div class="py-bento-grid" id="bentoCategoriesGrid"></div>
         </div>
       </section>
 
@@ -102,15 +124,9 @@
         </div>
       </section>
 
-      <!-- BARRA STICKY DE BÚSQUEDA + CATEGORÍAS -->
+      <!-- BARRA STICKY DE CATEGORÍAS DEL MENÚ -->
       <div class="catalog-sticky-bar" id="catalogStickyBar">
         <div class="container catalog-toolbar">
-          <div class="search-wrap">
-            <label class="search-box" for="menuSearch">
-              <span aria-hidden="true">🔎</span>
-              <input type="search" id="menuSearch" placeholder="Buscar pizza o ingrediente…" autocomplete="off">
-            </label>
-          </div>
           <div class="category-filters" id="categoryFilters" role="group" aria-label="Categorías"></div>
         </div>
       </div>
