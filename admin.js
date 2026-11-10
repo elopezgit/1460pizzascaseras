@@ -563,7 +563,12 @@ function renderRecentOrders() {
         </td>
         <td>${escapeHTML(order.customer_name || 'Sin nombre')}</td>
         <td><strong>${formatPrice(getOrderTotal(order))}</strong></td>
-        <td>${statusBadge(order.status)}</td>
+        <td>
+          <div class="recent-order-status-cell">
+            ${statusBadge(order.status)}
+            <button type="button" class="btn btn-danger btn-small" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido">🗑️ Eliminar</button>
+          </div>
+        </td>
       </tr>
     `;
   }).join('');
@@ -680,8 +685,10 @@ function renderOrders() {
         <td><strong>${formatPrice(getOrderTotal(order))}</strong></td>
         <td>${statusBadge(order.status)}</td>
         <td>
-          <button type="button" class="btn btn-ghost btn-small" data-order-open="${escapeAttr(order.id)}">Ver</button>
-          <button type="button" class="btn btn-danger btn-small" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido de la base">🗑️</button>
+          <div class="row-actions">
+            <button type="button" class="btn btn-ghost btn-small" data-order-open="${escapeAttr(order.id)}">Ver</button>
+            <button type="button" class="btn btn-danger btn-small" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido de la base">🗑️ Eliminar</button>
+          </div>
         </td>
       </tr>
     `;
@@ -743,17 +750,18 @@ function renderKanbanOrderCard(order, colConfig) {
         <div class="kanban-card-quick">
           <a class="icon-btn btn-mini" href="${escapeAttr(customerWhatsApp(order.customer_phone, meta.codigo))}" target="_blank" rel="noopener" title="Enviar WhatsApp al cliente">💬</a>
           <button type="button" class="btn btn-ghost btn-small" data-order-open="${escapeAttr(order.id)}">Detalle</button>
-          ${colConfig.next
-            ? `<button type="button" class="btn btn-primary btn-small" data-order-advance="${escapeAttr(order.id)}" data-next-status="${escapeAttr(colConfig.next)}">${escapeHTML(colConfig.nextLabel)}</button>`
-            : ''}
         </div>
       </div>
+
+      ${colConfig.next
+        ? `<button type="button" class="btn btn-primary btn-small kanban-advance-btn" data-order-advance="${escapeAttr(order.id)}" data-next-status="${escapeAttr(colConfig.next)}">${escapeHTML(colConfig.nextLabel)}</button>`
+        : ''}
 
       <div class="kanban-card-move-row">
         <select class="kanban-status-select" data-inline-order-status="${escapeAttr(order.id)}" aria-label="Mover pedido de columna">
           ${statusOptions}
         </select>
-        <button type="button" class="btn btn-danger btn-small" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido de la base">🗑️</button>
+        <button type="button" class="btn btn-danger btn-small kanban-delete-btn" data-order-delete="${escapeAttr(order.id)}" title="Eliminar pedido">🗑️ Eliminar</button>
       </div>
     </article>
   `;
@@ -928,19 +936,24 @@ async function updateOrderStatus(orderId, status) {
 
 async function deleteOrder(orderId) {
   const client = getClient();
-  const order = adminState.orders.find((row) => String(row.id) === String(orderId));
-  if (!order) return;
+  const order = adminState.orders.find(
+    (row) => String(row.id) === String(orderId) && String(row.empresa_id || EMPRESA_ID) === String(EMPRESA_ID)
+  );
+  if (!order || !order.id || !EMPRESA_ID) {
+    showToast('Pedido inválido o no pertenece a esta empresa.', 'error');
+    return;
+  }
 
   const meta = getOrderMeta(order);
   const label = meta.codigo || order.id;
-  if (!window.confirm(`¿Eliminar el pedido ${label} de la base de datos? Esta acción no se puede deshacer.`)) return;
+  if (!window.confirm(`¿Eliminar el pedido ${label} de 14-60 Pizzas Caseras LPH? Esta acción solo afecta a esta empresa y no se puede deshacer.`)) return;
 
   if (client) {
     try {
       const { error } = await client
         .from('orders')
         .delete()
-        .eq('id', orderId)
+        .eq('id', order.id)
         .eq('empresa_id', EMPRESA_ID);
 
       if (error) throw error;
@@ -951,11 +964,13 @@ async function deleteOrder(orderId) {
     }
   }
 
-  adminState.orders = adminState.orders.filter((row) => String(row.id) !== String(orderId));
+  adminState.orders = adminState.orders.filter(
+    (row) => !(String(row.id) === String(order.id) && String(row.empresa_id || EMPRESA_ID) === String(EMPRESA_ID))
+  );
   saveAdminCache();
   closeModal();
   renderAll();
-  showToast('Pedido eliminado.');
+  showToast(`Pedido ${label} eliminado.`);
 }
 
 /* ─── 1. CRUD DE PRODUCTOS ───────────────────────────────────────────────── */
