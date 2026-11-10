@@ -3114,22 +3114,27 @@ function applyAdminTheme(theme) {
 
 /* ─── OCULTAR BADGE INYECTADO DE NETLIFY ─────────────────────────────────── */
 (function suppressNetlifyBadge() {
+  const ALLOWED_BODY_IDS = new Set([
+    'loginView',
+    'adminApp',
+    'modalOverlay',
+    'toast'
+  ]);
+  const ALLOWED_TAGS = new Set(['SCRIPT', 'STYLE', 'LINK', 'NOSCRIPT']);
+
   function cleanNetlifyNodes() {
-    document.querySelectorAll('#netlify-badge, [id*="netlify"], [class*="netlify"], netlify-badge').forEach((el) => {
-      if (el.id !== 'adminApp') el.remove();
-    });
-    Array.from(document.body?.children || []).forEach((node) => {
-      if (!node || !node.tagName) return;
-      const text = (node.textContent || '').trim();
-      const shadowText = (node.shadowRoot?.textContent || '').trim();
-      if (
-        text.includes('Powered by Netlify') ||
-        text.includes('Build your own site with Netlify') ||
-        shadowText.includes('Powered by Netlify') ||
-        shadowText.includes('Build your own site with Netlify')
-      ) {
+    Array.from(document.documentElement?.children || []).forEach((node) => {
+      if (node.tagName !== 'HEAD' && node.tagName !== 'BODY') {
         node.remove();
       }
+    });
+
+    Array.from(document.body?.children || []).forEach((node) => {
+      if (!node || !node.tagName) return;
+      if (ALLOWED_TAGS.has(node.tagName)) return;
+      if (node.id && ALLOWED_BODY_IDS.has(node.id)) return;
+      node.style?.setProperty('display', 'none', 'important');
+      node.remove();
     });
   }
 

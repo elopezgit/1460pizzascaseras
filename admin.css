@@ -2374,14 +2374,25 @@ input[type="checkbox"] {
 }
 
 
-/* Ocultar badge inyectado por Netlify */
+/* Ocultar cualquier elemento externo/badge inyectado fuera de los contenedores del panel */
 #netlify-badge,
 [id*="netlify-badge"],
 [class*="netlify-badge"],
 netlify-badge,
-iframe[src*="netlify"] {
+iframe[src*="netlify"],
+html > *:not(head):not(body),
+body > *:not(#loginView):not(#adminApp):not(#modalOverlay):not(#toast):not(script):not(style):not(link) {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+  position: fixed !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  z-index: -9999 !important;
 }
